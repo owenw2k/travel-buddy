@@ -10,7 +10,8 @@ export default function AmericaMap() {
     return (
         <ComposableMap
             projection='geoAlbersUsa'
-            projectionConfig={{ scale: 800 }}
+            height={375}
+            projectionConfig={{ scale:700}}
         >
             <Map geoUrl={'/americaMap.json'}/>
         </ComposableMap>
