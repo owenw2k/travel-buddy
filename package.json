@@ -9,10 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@mantine/core": "^7.12.1",
+    "@mantinex/mantine-logo": "^1.0.1",
+    "@tabler/icons-react": "^3.13.0",
     "next": "14.2.6",
     "react": "^18",
     "react-dom": "^18",
-    "react-simple-maps": "^3.0.0"
+    "react-simple-maps": "^3.0.0",
+    "sass": "1.64.2"
   },
   "devDependencies": {
     "@types/node": "^20",
