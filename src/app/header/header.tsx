@@ -8,7 +8,7 @@ export default function Header() {
   const dispatch = useDispatch()
 
   return (
-    <div className={classes.header}>
+    <header className={classes.header}>
       <Container py={16} className={classes.inner}>
         <Switch
           defaultChecked
@@ -18,6 +18,6 @@ export default function Header() {
           onChange={() => dispatch({type: "SWITCH_MAP"})}
         />
       </Container>
-    </div>
+    </header>
   );
 }
