@@ -14,7 +14,7 @@ export default function AmericaMap() {
     <div className="map-container">
         <ComposableMap
             projection='geoAlbersUsa'
-            projectionConfig={{ scale: 1000 }}
+            projectionConfig={{ scale: 800 }}
             width={980}
             height={551}
             style={{
