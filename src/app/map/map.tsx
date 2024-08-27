@@ -2,13 +2,15 @@ import {
     ComposableMap,
     Geographies,
     Geography,
-    ZoomableGroup,
-    Marker
+    ZoomableGroup
   } from "react-simple-maps";
 
-const geoUrl = '/worldMap.json';
+import { useSelector } from 'react-redux'
 
 export default function Map() {
+  let world = useSelector((state: any) => state.world)
+  const geoUrl = world ? '/worldMap.json' : '/americaMap.json';
+  
   return (
     <div>
       <ComposableMap projection="geoMercator">

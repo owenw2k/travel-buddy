@@ -1,20 +1,21 @@
 import { useState } from 'react';
 import { Container, Switch, Burger} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { MantineLogo } from '@mantinex/mantine-logo';
 import classes from './HeaderSimple.module.css';
+import { useDispatch } from 'react-redux'
 
 export default function Header() {
-  const [opened, { toggle }] = useDisclosure(false);
 
+  const dispatch = useDispatch()
 
   return (
     <div className={classes.header}>
       <Container py={16} className={classes.inner}>
         <Switch
+          defaultChecked
           size='lg'
           onLabel="World"
-          offLabel="USA"
+          offLabel="America"
+          onChange={() => dispatch({type: "SWITCH_MAP"})}
         />
       </Container>
     </div>
