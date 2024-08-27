@@ -1,6 +1,9 @@
 const initialState = {
     world: true,
-    legends: [{ color: "#02A", name: "Visited" }]
+    legends: [{ color: "#02A", name: "Visited" },
+              {color: "#fc0330", name: "Driven"},
+              {color: "#21942c", name: "Lived"}
+    ]
 }
   
   // Use the initialState as a default value
@@ -9,9 +12,8 @@ export default function appReducer(state = initialState, action) {
   switch (action.type) {
       // Do something here based on the different types of actions
       case "SWITCH_MAP":
-        return {world: !state.world};
+        return {world: !state.world, legends: state.legends};
       case "ADD_LEGEND":
-        console.log(action);
         return {world: state.world, legends: [...state.legends, action.payload]};
       default:
         // If this reducer doesn't recognize the action type, or doesn't

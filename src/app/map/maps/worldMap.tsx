@@ -1,7 +1,7 @@
 import {
     ComposableMap,
 } from "react-simple-maps";
-import Map from './map';
+import Map from '../map';
 
 
 export default function WorldMap() {  
