@@ -1,5 +1,3 @@
-import { Switch } from "@mantine/core"
-
 const initialState = {
     world: true
 }
