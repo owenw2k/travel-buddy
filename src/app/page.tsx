@@ -7,7 +7,7 @@ import { MantineProvider } from '@mantine/core';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import rootReducer from './reducer';
-import Map from './map/map';
+import MapContainer from './map/mapContainer';
 
 const store = configureStore({
   reducer: rootReducer
@@ -18,7 +18,7 @@ export default function Home() {
     <Provider store={store}>
       <MantineProvider>
         <Header/>
-        <Map/>
+        <MapContainer/>
       </MantineProvider>
     </Provider>
   );
