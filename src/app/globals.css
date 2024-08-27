@@ -4,6 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 @import url('./header/header.css');
+@import url('./legend/legend.css');
 
 :root {
   --foreground-rgb: 0, 0, 0;
