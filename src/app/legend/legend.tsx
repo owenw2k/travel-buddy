@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 export default function Legend(){
     let legends = useSelector((state: any) => state.legends)
     return (
-        <div className={`absolute right-5 top-20 bg-white rounded-2xl p-2 m-3 legend`}>
+        <div className={`absolute right-5 bg-white rounded-2xl p-2 m-3 legend`}>
             {legends?.map(({ color, name }: any) => {
                 return (
                     <div
