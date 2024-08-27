@@ -4,14 +4,19 @@ import {
     Geographies,
     Geography,
 } from "react-simple-maps";
-import { SetStateAction, useState } from "react";
+import { useState } from "react";
 
 export default function AmericaMap() {
-    const [clickedStates, setClickedState] = useState<string[]>([]);
+    const [clickedStates, setClickedStates] = useState<string[]>([]);
     const geoUrl = '/americaMap.json';
 
     const handleClick = (geo: { properties: { name: any; }; }) => {
-        setClickedState([...clickedStates, geo.properties.name]);
+        if(clickedStates.includes(geo.properties.name)) {
+            setClickedStates(clickedStates.filter(state => {return state != geo.properties.name}))
+        }
+        else {
+            setClickedStates([...clickedStates, geo.properties.name]);
+        }
     }
   
     return (
