@@ -19,12 +19,12 @@ const initialState = {
 }
 
 const updateLegend = (state, action) => {
-  
     let changedGeographies = state.geographies.map((geography) => {
       if(geography?.id == action.payload.id) {
         let changedGeography = {id: geography.id, name: geography.name, legendIndex: action.payload.legendIndex}
         return changedGeography;
       }
+      return geography
     })
     return {world: state.world, legends: state.legends, geographies: changedGeographies}
   
