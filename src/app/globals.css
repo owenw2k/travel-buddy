@@ -4,6 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 @import url('./header/header.css');
+@import url('./legend/legend.css');
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -13,6 +14,7 @@
 
 body {
   color: rgb(var(--foreground-rgb));
+  overflow: hidden;
   background: linear-gradient(
       to bottom,
       transparent,
@@ -26,3 +28,4 @@ body {
     text-wrap: balance;
   }
 }
+
