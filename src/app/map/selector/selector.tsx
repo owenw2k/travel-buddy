@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 export default function Selector({children, location}: any) {
     const [position, setPosition] = useState({x: 0, y: 0});
+    const name = children?.props?.geography?.properties?.name;
 
     let legends = useSelector((state: any) => state.legends)
     let radioOptions: any[] = [];
@@ -17,15 +18,15 @@ export default function Selector({children, location}: any) {
     }
     
     return (
-        <Popover width={200} position="bottom" shadow="md" onOpen={getPosition}>
+        <Popover width={300} shadow="md" onOpen={getPosition}>
             <Popover.Target>
                 {children}
             </Popover.Target>
             <Portal>
-                <Popover.Dropdown style={{position: 'absolute', top: position?.y, left: position?.x - 100}}>
+                <Popover.Dropdown style={{position: 'absolute', top: position?.y, left: position?.x - 150}}>
                     <Radio.Group
                         name="selector"
-                        label="Select"
+                        label={name}
                     >
                         <Group mt="xs">
                             {radioOptions}
