@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@custom-react-hooks/use-mouse": "^1.5.1",
     "@mantine/core": "^7.12.1",
     "@reduxjs/toolkit": "^2.2.7",
     "@tabler/icons-react": "^3.13.0",

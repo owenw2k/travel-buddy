@@ -21,7 +21,7 @@ export default function ColorModal() {
         <Button fullWidth onClick={() => dispatch({type: 'ADD_LEGEND', payload: {color, name}})}>Create</Button>
       </Modal>
 
-      <Button fullWidth onClick={open}>Add</Button>
+      <Button fullWidth onClick={open} variant='default'>Add</Button>
     </>
   );
 }
