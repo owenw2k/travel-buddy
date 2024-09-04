@@ -1,3 +1,5 @@
+# Travel Buddy
+
 Travel Buddy is a simple react web app designed to let you log which countries/states you've been to.
 
 ![travel-buddy](https://github.com/user-attachments/assets/90322e83-d643-4e88-a045-99e6aa4cb4ca)
