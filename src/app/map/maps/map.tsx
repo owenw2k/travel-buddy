@@ -3,11 +3,17 @@ import  {
     Geographies,
     Geography,
 } from "react-simple-maps";
-import { useState, useRef } from "react";
 import Selector from "../selector/selector";
+import { useSelector } from "react-redux";
 
 export default function Map({geoUrl, location}: any) {      
-    const [clickedStates, setClickedStates] = useState<string[]>([]);
+    let geographies = useSelector((state: any) => state.geographies);
+    let legends = useSelector((state: any) => state.legends);
+
+    const getFill = (geo: { id: any; }) => {
+        let geography = geographies.find((geography: { id: any; }) => geography.id == geo?.id)
+        return legends[geography?.legendIndex].color ?? "#525666";
+    }
 
     return (
         <ZoomableGroup>
@@ -21,10 +27,10 @@ export default function Map({geoUrl, location}: any) {
                                 geography={geo}  
                                 style={{
                                     default: { outline: "none"},
-                                    hover: { outline: "none", fill: clickedStates.includes(geo.properties.name) ? "#02A" : "#6f88e8" },
+                                    hover: { outline: "none", fill: "#6f88e8" },
                                     pressed: { outline: "none"},
                                 }}
-                                fill={clickedStates.includes(geo.properties.name) ? "#02A" : "#525666"}
+                                fill={getFill(geo)}
                             />
                         </Selector>
                     ))
