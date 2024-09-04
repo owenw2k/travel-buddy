@@ -11,10 +11,9 @@ export default function Selector({children, location}: any) {
     const name = children?.props?.geography?.properties?.name;
     const id = children?.props?.geography?.id;
 
-    const setLegend =   () => {
-        if(value) {
-            dispatch({type: "SET_LEGEND", payload: {id, legendIndex: value}});
-        }
+    const setLegend = (value: any) => {
+        dispatch({type: "SET_LEGEND", payload: {id, legendIndex: value}});
+        setValue(value);
     }
 
     let legends = useSelector((state: any) => state.legends)
@@ -37,9 +36,7 @@ export default function Selector({children, location}: any) {
                     name="selector"
                     label={name}
                     value={value}
-                    //@ts-ignore
-                    onChange={setValue}
-                    onClick={setLegend}
+                    onChange={(value: string) => setLegend(value)}
                 >
                     <Group mt="xs">
                         {radioOptions}

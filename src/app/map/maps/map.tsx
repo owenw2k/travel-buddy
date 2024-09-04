@@ -11,7 +11,7 @@ export default function Map({geoUrl, location}: any) {
     let legends = useSelector((state: any) => state.legends);
 
     const getFill = (geo: { id: any; }) => {
-        let geography = geographies.find((geography: { id: any; }) => geography.id == geo?.id)
+        let geography = geographies.find((geography: { id: any; }) => geography?.id == geo?.id)
         return legends[geography?.legendIndex]?.color ?? "#525666";
     }
 

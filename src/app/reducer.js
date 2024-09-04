@@ -17,6 +17,21 @@ const initialState = {
     ],
     geographies
 }
+
+const updateLegend = (state, action) => {
+  
+    let changedGeographies = state.geographies.map((geography) => {
+      if(geography?.id == action.payload.id) {
+        let changedGeography = {id: geography.id, name: geography.name, legendIndex: action.payload.legendIndex}
+        return changedGeography;
+      }
+    })
+    return {world: state.world, legends: state.legends, geographies: changedGeographies}
+  
+ /* let changedGeographies = [...state.geographies];
+  changedGeographies.find(geography => geography.id == action.payload.id).legendIndex = action.payload.legendIndex;
+  return {world: state.world, legends: state.legends, geographies: changedGeographies}*/
+}
   
 // Use the initialState as a default value
 export default function appReducer(state = initialState, action) {
@@ -28,9 +43,7 @@ export default function appReducer(state = initialState, action) {
       case "ADD_LEGEND":
         return {world: state.world, legends: [...state.legends, action.payload], geographies: state.geographies};
       case "SET_LEGEND":
-        let changedGeographies = [...state.geographies];
-        changedGeographies.find(geography => geography.id == action.payload.id).legendIndex = action.payload.legendIndex;
-        return {world: state.world, legends: state.legends, geographies: changedGeographies}
+        return updateLegend(state, action);
       default:
         // If this reducer doesn't recognize the action type, or doesn't
         // care about this specific action, return the existing state unchanged
