@@ -1,39 +1,51 @@
-import { Popover, Radio, Group, Text, Portal} from '@mantine/core';
-import { useSelector } from "react-redux"
-import { useState } from 'react';
+import { Popover, Radio, Group} from '@mantine/core';
+import { useSelector, useDispatch } from "react-redux"
+import { useState, useEffect } from 'react';
 
 
 export default function Selector({children, location}: any) {
+    
     const [position, setPosition] = useState({x: 0, y: 0});
+    const [value, setValue] = useState(null);
+    const dispatch = useDispatch();
     const name = children?.props?.geography?.properties?.name;
+    const id = children?.props?.geography?.id;
+
+    const setLegend =   () => {
+        if(value) {
+            dispatch({type: "SET_LEGEND", payload: {id, legendIndex: value}});
+        }
+    }
 
     let legends = useSelector((state: any) => state.legends)
     let radioOptions: any[] = [];
-    {legends.forEach((legend: any) => {
-        radioOptions.push(<Radio key={legend.name} value={legend.name} label={legend.name}/>)
-    })}
+    for (let [index, legend] of legends.entries()){
+        radioOptions.push(<Radio key={index} value={index.toString()} label={legend.name}/>)
+    }
 
     const getPosition = () => {
         setPosition({x: location?.x, y: location?.y})
     }
-    
+
     return (
         <Popover width={300} shadow="md" onOpen={getPosition}>
             <Popover.Target>
                 {children}
             </Popover.Target>
-            <Portal>
-                <Popover.Dropdown style={{position: 'absolute', top: position?.y, left: position?.x - 150}}>
-                    <Radio.Group
-                        name="selector"
-                        label={name}
-                    >
-                        <Group mt="xs">
-                            {radioOptions}
-                        </Group>
-                    </Radio.Group>
-                </Popover.Dropdown>
-            </Portal>
+            <Popover.Dropdown style={{position: 'absolute', top: position?.y, left: position?.x - 150}}>
+                <Radio.Group
+                    name="selector"
+                    label={name}
+                    value={value}
+                    //@ts-ignore
+                    onChange={setValue}
+                    onClick={setLegend}
+                >
+                    <Group mt="xs">
+                        {radioOptions}
+                    </Group>
+                </Radio.Group>
+            </Popover.Dropdown>
         </Popover>
     );
 }

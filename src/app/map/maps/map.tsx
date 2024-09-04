@@ -12,7 +12,7 @@ export default function Map({geoUrl, location}: any) {
 
     const getFill = (geo: { id: any; }) => {
         let geography = geographies.find((geography: { id: any; }) => geography.id == geo?.id)
-        return legends[geography?.legendIndex].color ?? "#525666";
+        return legends[geography?.legendIndex]?.color ?? "#525666";
     }
 
     return (
