@@ -9,15 +9,9 @@ import Selector from "../selector/selector";
 export default function Map({geoUrl, location}: any) {      
     const [clickedStates, setClickedStates] = useState<string[]>([]);
 
-    /*const handleClick = (geo: { properties: { name: any; }; }) => {
-        console.log(geo)
-        if(clickedStates.includes(geo.properties.name)) {
-            setClickedStates(clickedStates.filter(state => {return state != geo.properties.name}))
-        }
-        else {
-            setClickedStates([...clickedStates, geo.properties.name]);
-        }
-    }*/
+    const handleClick = () => {
+        console.log('hi')
+    }
 
     return (
         <ZoomableGroup>
@@ -35,6 +29,7 @@ export default function Map({geoUrl, location}: any) {
                                     pressed: { outline: "none"},
                                 }}
                                 fill={clickedStates.includes(geo.properties.name) ? "#02A" : "#525666"}
+                                onClick={handleClick}
                             />
                         </Selector>
                     ))
