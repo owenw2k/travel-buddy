@@ -40,7 +40,7 @@ const updateStatus = (state: State, action: Action) => {
 export default function appReducer(state: State = initialState, action: Action) {
   switch (action.type) {
       case "SWITCH_MAP":
-        return {world: !state.world, legends: state.legends, geographies: state.geographies};
+        return {world: action.payload.map == 'World', legends: state.legends, geographies: state.geographies};
       case "ADD_LEGEND":
         return {world: state.world, legends: [...state.legends, action.payload], geographies: state.geographies};
       case "UPDATE_STATUS":

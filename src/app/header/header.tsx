@@ -23,7 +23,7 @@ export default function Header() {
           defaultValue="World"
           variant="outline"
           visibleFrom="sm"
-          onChange={() => dispatch({type: "SWITCH_MAP"})}
+          onChange={(value) => dispatch({type: "SWITCH_MAP", payload: {map: value}})}
         >
           <Tabs.List>{items}</Tabs.List>
         </Tabs>
