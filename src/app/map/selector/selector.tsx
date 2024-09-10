@@ -11,8 +11,8 @@ export default function Selector({children, location}: any) {
     const name = children?.props?.geography?.properties?.name;
     const id = children?.props?.geography?.id;
 
-    const setLegend = (value: any) => {
-        dispatch({type: "SET_LEGEND", payload: {id, legendIndex: value}});
+    const updateStatus = (value: any) => {
+        dispatch({type: "UPDATE_STATUS", payload: {id, legendIndex: value}});
         setValue(value);
     }
 
@@ -36,7 +36,7 @@ export default function Selector({children, location}: any) {
                     name="selector"
                     label={name}
                     value={value}
-                    onChange={(value: string) => setLegend(value)}
+                    onChange={(value: string) => updateStatus(value)}
                 >
                     <Group mt="xs">
                         {radioOptions}

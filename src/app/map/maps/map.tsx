@@ -8,11 +8,11 @@ import { useSelector } from "react-redux";
 
 export default function Map({geoUrl, location}: any) {      
     let geographies = useSelector((state: any) => state.geographies);
-    let legends = useSelector((state: any) => state.legends);
+    let statuses = useSelector((state: any) => state.legends);
 
     const getFill = (geo: { id: any; }) => {
         let geography = geographies.find((geography: { id: any; }) => geography?.id == geo?.id)
-        return legends[geography?.legendIndex]?.color ?? "#525666";
+        return statuses[geography?.legendIndex]?.color ?? "#525666";
     }
 
     return (
