@@ -5,14 +5,21 @@ import  {
 } from "react-simple-maps";
 import Selector from "../selector/selector";
 import { useSelector } from "react-redux";
+import { State } from "../../types";
+import {MapProps} from '../../types';
 
-export default function Map({geoUrl, location}: any) {      
-    let geographies = useSelector((state: any) => state.geographies);
-    let legends = useSelector((state: any) => state.legends);
+export default function Map({geoUrl, location}: MapProps) {      
+    let geographies = useSelector((state: State) => state.geographies);
+    let statuses = useSelector((state: State) => state.legends);
 
-    const getFill = (geo: { id: any; }) => {
-        let geography = geographies.find((geography: { id: any; }) => geography?.id == geo?.id)
-        return legends[geography?.legendIndex]?.color ?? "#525666";
+    const getFill = (geo: { id: string }) => {
+        let geography = geographies.find((geography) => geography?.id == geo?.id)
+        if(geography?.legendIndex || geography?.legendIndex == 0) {
+            return statuses[geography?.legendIndex]?.color
+        }
+        else {
+            return "#525666";
+        }
     }
 
     return (
