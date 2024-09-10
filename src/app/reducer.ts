@@ -1,25 +1,6 @@
 import stateData from '../../public/americaMap.json';
 import countryData from '../../public/worldMap.json';
-
-type Geography = {
-  id: string,
-  name: string,
-  legendIndex: number | null
-};
-
-type State = {
-  world: boolean,
-  legends: Array<{
-    color: string,
-    name: string
-  }>,
-  geographies: Array<Geography>
-};
-
-type Action = {
-  type: string,
-  payload: any
-}
+import {Geography, Action, Legend, State} from './types';
 
 let geographies: Array<Geography> = [];
 stateData.objects.states.geometries.map((state) => {
