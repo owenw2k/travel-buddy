@@ -6,12 +6,13 @@ import  {
 import Selector from "../selector/selector";
 import { useSelector } from "react-redux";
 import { State } from "../../types";
+import {MapProps} from '../../types';
 
-export default function Map({geoUrl, location}: any) {      
+export default function Map({geoUrl, location}: MapProps) {      
     let geographies = useSelector((state: State) => state.geographies);
     let statuses = useSelector((state: State) => state.legends);
 
-    const getFill = (geo: { id: string; }) => {
+    const getFill = (geo: { id: string }) => {
         let geography = geographies.find((geography) => geography?.id == geo?.id)
         if(geography?.legendIndex || geography?.legendIndex == 0) {
             return statuses[geography?.legendIndex]?.color

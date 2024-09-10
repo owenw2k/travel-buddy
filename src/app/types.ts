@@ -26,3 +26,14 @@ export type Location = {
     y: number,
     position: string
 }
+
+export type MapProps = {
+    geoUrl?: string,
+    location: Location
+};
+
+export type SelectorProps = {
+    children: JSX.Element,
+    location: Location
+}
+  

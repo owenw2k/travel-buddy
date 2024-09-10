@@ -1,24 +1,24 @@
 import { Popover, Radio, Group} from '@mantine/core';
 import { useSelector, useDispatch } from "react-redux"
 import { useState, useEffect } from 'react';
-import { State } from '../../types';
+import { State, SelectorProps } from '../../types';
 
 
-export default function Selector({children, location}: any) {
+export default function Selector({children, location}: SelectorProps) {
     
     const [position, setPosition] = useState({x: 0, y: 0});
-    const [value, setValue] = useState<number | null>(null);
+    const [value, setValue] = useState<string | null>(null);
     const dispatch = useDispatch();
     const name = children?.props?.geography?.properties?.name;
     const id = children?.props?.geography?.id;
 
-    const updateStatus = (value: number) => {
-        dispatch({type: "UPDATE_STATUS", payload: {id, legendIndex: value}});
+    const updateStatus = (value: string) => {
+        dispatch({type: "UPDATE_STATUS", payload: {id, legendIndex: Number(value)}});
         setValue(value);
     }
 
     let legends = useSelector((state: State) => state.legends)
-    let radioOptions: any[] = [];
+    let radioOptions: JSX.Element[] = [];
     for (let [index, legend] of legends.entries()){
         radioOptions.push(<Radio key={index} value={index.toString()} label={legend.name}/>)
     }

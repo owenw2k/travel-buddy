@@ -2,9 +2,9 @@ import {
     ComposableMap,
 } from "react-simple-maps";
 import Map from './map';
-import {Location} from '../../types'
+import {MapProps} from '../../types';
 
-export default function AmericaMap({location}: any) {
+export default function AmericaMap({location}: MapProps) {
     return (
         <ComposableMap
             projection='geoAlbersUsa'
