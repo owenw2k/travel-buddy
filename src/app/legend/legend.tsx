@@ -1,9 +1,16 @@
 import ColorModal from "./colorModal/colorModal";
 import { useSelector } from "react-redux";
 import { State, Legend as LegendType } from '../types'
+import { useEffect, useState } from "react";
 
 export default function Legend(){
-    let legends = useSelector((state: State) => state.legends)
+    
+    const [legends, setLegends] = useState<LegendType[]>([]);
+    const reduxLegends = useSelector((state: State) => state.legends);
+    useEffect(() => {
+        setLegends(reduxLegends);
+    }, [reduxLegends]);
+
     return (
         <div className={`absolute right-5 bg-white rounded-2xl p-2 m-3 legend`}>
             {legends?.map(({ color, name }: LegendType) => {
