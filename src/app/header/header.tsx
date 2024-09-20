@@ -1,4 +1,4 @@
-import { Container, Tabs} from '@mantine/core';
+import { Button, Container, Tabs} from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { State } from '../types';
 import { useEffect, useState } from 'react';
@@ -24,9 +24,14 @@ export default function Header() {
     </Tabs.Tab>
   ));
 
+  const clearData = () => {
+    dispatch({type: "CLEAR_DATA"});
+    window.location.reload();
+  }
+
   return (
     <header className='header'>
-      <Container ms={0} py={8} className='inner'>
+      <Container ms={0} py={8} className='inner' fluid={true}>
         <Tabs
           value={world ? 'World' : 'America'}
           variant="outline"
@@ -35,6 +40,9 @@ export default function Header() {
         >
           <Tabs.List>{items}</Tabs.List>
         </Tabs>
+        <Button variant='filled' color='red' onClick={clearData}>Clear Data</Button>
+      </Container>
+      <Container>
       </Container>
     </header>
   );

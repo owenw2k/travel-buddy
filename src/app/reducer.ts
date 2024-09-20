@@ -1,7 +1,7 @@
 import stateData from '../../public/americaMap.json';
 import countryData from '../../public/worldMap.json';
 import {Geography, Action, Legend, State} from './types';
-import {get,set} from "local-storage";
+import {get,set,clear} from "local-storage";
 
 let geographies: Array<Geography> = [];
 stateData.objects.states.geometries.map((state) => {
@@ -17,9 +17,7 @@ countryData.objects.countries.geometries.map((country) => {
   }
 });
 
-let initialState: State;
-let cachedState: State = get('reduxState');
-initialState = cachedState ?? {
+let defaultState = {
   world: true,
   legends: [{color: "#02A", name: "Visited" },
             {color: "#fc0330", name: "Driven"},
@@ -27,6 +25,9 @@ initialState = cachedState ?? {
   ],
   geographies
 }
+
+let cachedState: State = get('reduxState');
+let initialState: State = cachedState ?? defaultState;
 set('reduxState', initialState);
 
 const updateStatus = (state: State, action: Action) => {
@@ -55,6 +56,9 @@ export default function appReducer(state: State = initialState, action: Action) 
         let newStatusState = updateStatus(state, action);
         set('reduxState', newStatusState);
         return newStatusState;
+      case "CLEAR_DATA":
+        clear();
+        return initialState;
       default:
         // If this reducer doesn't recognize the action type, or doesn't
         // care about this specific action, return the existing state unchanged
