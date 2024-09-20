@@ -1,6 +1,7 @@
 import stateData from '../../public/americaMap.json';
 import countryData from '../../public/worldMap.json';
 import {Geography, Action, Legend, State} from './types';
+import {get,set,clear} from "local-storage";
 
 let geographies: Array<Geography> = [];
 stateData.objects.states.geometries.map((state) => {
@@ -16,14 +17,18 @@ countryData.objects.countries.geometries.map((country) => {
   }
 });
 
-const initialState: State = {
-    world: true,
-    legends: [{color: "#02A", name: "Visited" },
-              {color: "#fc0330", name: "Driven"},
-              {color: "#21942c", name: "Lived"}
-    ],
-    geographies
+let defaultState = {
+  world: true,
+  legends: [{color: "#02A", name: "Visited" },
+            {color: "#fc0330", name: "Driven"},
+            {color: "#21942c", name: "Lived"}
+  ],
+  geographies
 }
+
+let cachedState: State = get('reduxState');
+let initialState: State = cachedState ?? defaultState;
+set('reduxState', initialState);
 
 const updateStatus = (state: State, action: Action) => {
     let changedGeographies = state.geographies.map((geography) => {
@@ -40,14 +45,24 @@ const updateStatus = (state: State, action: Action) => {
 export default function appReducer(state: State = initialState, action: Action) {
   switch (action.type) {
       case "SWITCH_MAP":
-        return {world: action.payload.map == 'World', legends: state.legends, geographies: state.geographies};
+        let newMapState = {world: action.payload.map == 'World', legends: state.legends, geographies: state.geographies};
+        set('reduxState', newMapState);
+        return newMapState;
       case "ADD_LEGEND":
-        return {world: state.world, legends: [...state.legends, action.payload], geographies: state.geographies};
+        let newLegendState = {world: state.world, legends: [...state.legends, action.payload], geographies: state.geographies};
+        set('reduxState', newLegendState);
+        return newLegendState;
       case "UPDATE_STATUS":
-        return updateStatus(state, action);
+        let newStatusState = updateStatus(state, action);
+        set('reduxState', newStatusState);
+        return newStatusState;
+      case "CLEAR_DATA":
+        clear();
+        return initialState;
       default:
         // If this reducer doesn't recognize the action type, or doesn't
         // care about this specific action, return the existing state unchanged
+        set('reduxState', state);
         return state;
     }
 }
