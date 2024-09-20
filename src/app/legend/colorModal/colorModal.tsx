@@ -9,6 +9,11 @@ export default function ColorModal() {
   const [color, onColorChange] = useState('#02A');
   const [name, onNameChange] = useState('');
 
+  const handleCreate = () => {
+    dispatch({type: 'ADD_LEGEND', payload: {color, name}});
+    close();
+  }
+
   return (
     <>
       <Modal opened={opened} onClose={close} title="Add Legend">
@@ -18,7 +23,7 @@ export default function ColorModal() {
         <Input.Wrapper label="Legend Name" pt={5} pb={10}>
           <Input placeholder="" value={name} onChange={(event) => onNameChange(event.currentTarget.value)}/>
         </Input.Wrapper>
-        <Button fullWidth onClick={() => dispatch({type: 'ADD_LEGEND', payload: {color, name}})}>Create</Button>
+        <Button fullWidth onClick={handleCreate}>Create</Button>
       </Modal>
 
       <Button fullWidth onClick={open} variant='default'>Add</Button>
