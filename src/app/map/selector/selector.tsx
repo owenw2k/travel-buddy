@@ -48,11 +48,11 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
         }
     }
 
-    if(opened) {
+    /*if(opened) {
         emitter.on("map-click", () => {
             setOpened(false);
         });
-    }
+    }*/
 
     return (
         <Popover width={300} shadow="md" onOpen={getPosition}>
