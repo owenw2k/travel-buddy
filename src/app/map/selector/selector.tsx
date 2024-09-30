@@ -1,9 +1,8 @@
 import { Popover, Radio, Group} from '@mantine/core';
 import { useSelector, useDispatch } from "react-redux"
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { State, SelectorProps } from '../../types';
 import {get} from "local-storage";
-import EventEmitter from 'events';
 import { Geography } from 'react-simple-maps';
 
 
@@ -48,14 +47,23 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
         }
     }
 
-    /*if(opened) {
+    if(opened) {
         emitter.on("map-click", () => {
-            setOpened(false);
+            console.log("Map Clicked");
+            closePopover();
         });
-    }*/
+    }
+
+    const openPopover = () => {
+        setOpened(true);
+    }
+
+    const closePopover = () => {
+        setOpened(false);
+    }
 
     return (
-        <Popover width={300} shadow="md" onOpen={getPosition}>
+        <Popover width={300} shadow="md" onOpen={getPosition} opened={opened}>
             <Popover.Target>
                 <Geography
                     key={geo.rsmKey} 
@@ -66,7 +74,8 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
                         pressed: { outline: "none"},
                     }}
                     fill={getFill(geo)}
-                    onClick={() => setOpened((o) => !o)}
+                    onFocus={openPopover}
+                    onBlur={closePopover}
                 />
             </Popover.Target>
             <Popover.Dropdown style={{position: 'absolute', top: position?.y, left: position?.x - 150}}>
