@@ -12,7 +12,7 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
     const id = geo?.id;
     let legends = useSelector((state: State) => state.legends);
     let localState: State = get('reduxState');
-    let legendIndex = localState.geographies.find(geography => geography.id == id)?.legendIndex;
+    let legendIndex = localState?.geographies?.find(geography => geography.id == id)?.legendIndex;
     
     const [position, setPosition] = useState({x: 0, y: 0});
     const [value, setValue] = useState<string | null>(legendIndex?.toString() ?? null);
@@ -38,7 +38,7 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
     let statuses = useSelector((state: State) => state.legends);
 
     const getFill = (geo: { id: string }) => {
-        let geography = geographies.find((geography) => geography?.id == geo?.id)
+        let geography = geographies?.find((geography) => geography?.id == geo?.id)
         if(geography?.legendIndex || geography?.legendIndex == 0) {
             return statuses[geography?.legendIndex]?.color
         }
