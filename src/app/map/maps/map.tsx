@@ -10,6 +10,7 @@ import EventEmitter from 'events';
 export default function Map({geoUrl, location}: MapProps) {    
     
     const emitter = new EventEmitter();
+    emitter.setMaxListeners(100);
 
     return (
         <ZoomableGroup onMoveStart={() => emitter.emit("map-click")}>

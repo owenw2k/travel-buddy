@@ -50,16 +50,8 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
     if(opened) {
         emitter.on("map-click", () => {
             console.log("Map Clicked");
-            closePopover();
+            setOpened(false);
         });
-    }
-
-    const openPopover = () => {
-        setOpened(true);
-    }
-
-    const closePopover = () => {
-        setOpened(false);
     }
 
     return (
@@ -74,8 +66,7 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
                         pressed: { outline: "none"},
                     }}
                     fill={getFill(geo)}
-                    onFocus={openPopover}
-                    onBlur={closePopover}
+                    onClick={() => setOpened(!opened)}
                 />
             </Popover.Target>
             <Popover.Dropdown style={{position: 'absolute', top: position?.y, left: position?.x - 150}}>
