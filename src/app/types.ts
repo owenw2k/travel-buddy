@@ -1,3 +1,4 @@
+import { EventEmitter } from "stream";
 
 export type Geography = {
     id: string,
@@ -33,7 +34,8 @@ export type MapProps = {
 };
 
 export type SelectorProps = {
-    children: JSX.Element,
-    location: Location
+    location: Location,
+    emitter: EventEmitter
+    geo: any
 }
   
