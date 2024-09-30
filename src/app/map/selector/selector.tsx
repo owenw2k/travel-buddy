@@ -49,7 +49,6 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
 
     if(opened) {
         emitter.on("map-click", () => {
-            console.log("Map Clicked");
             setOpened(false);
         });
     }
