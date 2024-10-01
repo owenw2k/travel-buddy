@@ -20,9 +20,15 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
     const dispatch = useDispatch();
    
 
-    const updateStatus = (value: string) => {
-        dispatch({type: "UPDATE_STATUS", payload: {id, legendIndex: Number(value)}});
-        setValue(value);
+    const updateStatus = (newValue: string) => {
+        if (value != newValue){
+            dispatch({type: "UPDATE_STATUS", payload: {id, legendIndex: Number(newValue)}});
+            setValue(newValue);
+        }
+        else {
+            dispatch({type: "UPDATE_STATUS", payload: {id, legendIndex: null}});
+            setValue(null);
+        }
     }
 
     let radioOptions: JSX.Element[] = [];
@@ -75,7 +81,7 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
                             name="selector"
                             label={name}
                             value={value}
-                            onChange={(value: string) => updateStatus(value)}
+                            onClick={(e) => updateStatus((e.target as HTMLInputElement)?.value)}
                         >
                             <Group mt="xs">
                                 {radioOptions}
