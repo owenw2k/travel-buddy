@@ -1,4 +1,4 @@
-import { Popover, Radio, Group} from '@mantine/core';
+import { Popover, Radio, Group, CloseButton, Grid} from '@mantine/core';
 import { useSelector, useDispatch } from "react-redux"
 import { useState } from 'react';
 import { State, SelectorProps } from '../../types';
@@ -69,16 +69,23 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
                 />
             </Popover.Target>
             <Popover.Dropdown style={{position: 'absolute', top: position?.y, left: position?.x - 150}}>
-                <Radio.Group
-                    name="selector"
-                    label={name}
-                    value={value}
-                    onChange={(value: string) => updateStatus(value)}
-                >
-                    <Group mt="xs">
-                        {radioOptions}
-                    </Group>
-                </Radio.Group>
+                <Grid>
+                    <Grid.Col span={11} pl={5} pr={0}>
+                        <Radio.Group
+                            name="selector"
+                            label={name}
+                            value={value}
+                            onChange={(value: string) => updateStatus(value)}
+                        >
+                            <Group mt="xs">
+                                {radioOptions}
+                            </Group>
+                        </Radio.Group>
+                    </Grid.Col>
+                    <Grid.Col span={1} p={0}>
+                        <CloseButton className='' variant="transparent" onClick={() => setOpened(!opened)} />
+                    </Grid.Col>
+                </Grid>
             </Popover.Dropdown>
         </Popover>
     );
