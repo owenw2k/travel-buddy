@@ -1,4 +1,4 @@
-import { Popover, Radio, Group, CloseButton, Grid} from '@mantine/core';
+import { Popover, Chip, Group, CloseButton, Grid, Text} from '@mantine/core';
 import { useSelector, useDispatch } from "react-redux"
 import { useState } from 'react';
 import { State, SelectorProps } from '../../types';
@@ -13,6 +13,8 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
     let legends = useSelector((state: State) => state.legends);
     let localState: State = get('reduxState');
     let legendIndex = localState?.geographies?.find(geography => geography.id == id)?.legendIndex;
+    let geographies = useSelector((state: State) => state.geographies);
+    let statuses = useSelector((state: State) => state.legends);
     
     const [position, setPosition] = useState({x: 0, y: 0});
     const [value, setValue] = useState<string | null>(legendIndex?.toString() ?? null);
@@ -31,17 +33,18 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
         }
     }
 
-    let radioOptions: JSX.Element[] = [];
+    let chipOptions: JSX.Element[] = [];
     for (let [index, legend] of legends.entries()){
-        radioOptions.push(<Radio key={index} value={index.toString()} label={legend.name}/>)
+        chipOptions.push(
+        <Chip key={index} value={index.toString()} size="xs" color={legend.color} onClick={(e) => updateStatus((e.target as HTMLInputElement)?.value)}>
+            {legend.name}
+        </Chip>
+        );
     }
 
     const getPosition = () => {
         setPosition({x: location?.x, y: location?.y})
     }
-
-    let geographies = useSelector((state: State) => state.geographies);
-    let statuses = useSelector((state: State) => state.legends);
 
     const getFill = (geo: { id: string }) => {
         let geography = geographies?.find((geography) => geography?.id == geo?.id)
@@ -77,16 +80,15 @@ export default function Selector({ location, emitter, geo}: SelectorProps) {
             <Popover.Dropdown style={{position: 'absolute', top: position?.y, left: position?.x - 150}}>
                 <Grid>
                     <Grid.Col span={11} pl={5} pr={0}>
-                        <Radio.Group
-                            name="selector"
-                            label={name}
+                        <Text pl={3} pb={5} size="sm" fw={500}>{name}</Text>
+                        <Chip.Group
                             value={value}
-                            onClick={(e) => updateStatus((e.target as HTMLInputElement)?.value)}
+                            multiple={false}
                         >
-                            <Group mt="xs">
-                                {radioOptions}
+                            <Group>
+                                {chipOptions}
                             </Group>
-                        </Radio.Group>
+                        </Chip.Group>
                     </Grid.Col>
                     <Grid.Col span={1} p={0}>
                         <CloseButton className='' variant="transparent" onClick={() => setOpened(!opened)} />
