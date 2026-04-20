@@ -1,0 +1,150 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Fonts */
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  /* Palette tokens */
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+
+  /* shadcn compatibility tokens */
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+:root {
+  --radius: 0.625rem;
+
+  /* Custom palette */
+  --background: #f6f4f0;
+  --surface: #ede9e2;
+  --border: #cec7bc;
+  --text-primary: #1a1914;
+  --text-muted: #6b6455;
+  --accent: #166534;
+  --accent-hover: #14532d;
+
+  /* shadcn semantic tokens mapped to our palette */
+  --foreground: #1a1914;
+  --card: #ede9e2;
+  --card-foreground: #1a1914;
+  --popover: #ede9e2;
+  --popover-foreground: #1a1914;
+  --primary: #166534;
+  --primary-foreground: #f6f4f0;
+  --secondary: #ede9e2;
+  --secondary-foreground: #1a1914;
+  --muted: #ede9e2;
+  --muted-foreground: #6b6455;
+  --input: #cec7bc;
+  --ring: #166534;
+  --destructive: oklch(0.577 0.245 27.325);
+
+  /* chart / sidebar (shadcn defaults) */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.067);
+  --sidebar: #ede9e2;
+  --sidebar-foreground: #1a1914;
+  --sidebar-primary: #166534;
+  --sidebar-primary-foreground: #f6f4f0;
+  --sidebar-accent: #cec7bc;
+  --sidebar-accent-foreground: #1a1914;
+  --sidebar-border: #cec7bc;
+  --sidebar-ring: #166534;
+}
+
+.dark {
+  --background: #171a14;
+  --surface: #1f2219;
+  --border: #2d3328;
+  --text-primary: #ecf0e8;
+  --text-muted: #8a9484;
+  --accent: #4ade80;
+  --accent-hover: #22c55e;
+
+  --foreground: #ecf0e8;
+  --card: #1f2219;
+  --card-foreground: #ecf0e8;
+  --popover: #1f2219;
+  --popover-foreground: #ecf0e8;
+  --primary: #4ade80;
+  --primary-foreground: #171a14;
+  --secondary: #1f2219;
+  --secondary-foreground: #ecf0e8;
+  --muted: #1f2219;
+  --muted-foreground: #8a9484;
+  --input: #2d3328;
+  --ring: #4ade80;
+  --destructive: oklch(0.704 0.191 22.216);
+
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.067);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: #1f2219;
+  --sidebar-foreground: #ecf0e8;
+  --sidebar-primary: #4ade80;
+  --sidebar-primary-foreground: #171a14;
+  --sidebar-accent: #2d3328;
+  --sidebar-accent-foreground: #ecf0e8;
+  --sidebar-border: #2d3328;
+  --sidebar-ring: #4ade80;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+  code,
+  pre {
+    @apply font-mono;
+  }
+}
