@@ -9,6 +9,9 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -34,3 +37,22 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Start server
+        run: |
+          pnpm start &
+          until curl -sf http://localhost:3000; do sleep 1; done
+
+      - name: PR Screenshots
+        uses: owenw2k/screenshot-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pr-number: ${{ github.event.pull_request.number }}
+          install-command: pnpm install --frozen-lockfile
+          build-command: pnpm build
+          serve-command: pnpm start
+          dark-mode-toggle-label: "switch to dark mode"
+
+      - name: Stop server
+        if: always()
+        run: fuser -k 3000/tcp 2>/dev/null || true
