@@ -6,7 +6,7 @@ Interactive map to track regions you've visited, driven through, or lived in. Bu
 
 ## Browser Compatibility
 
-**Chromium-based browsers only** (Chrome, Edge, Arc, Brave). Safari and Firefox are not supported — non-Chromium users see a friendly fallback page.
+**Chromium-based browsers only** (Chrome, Edge, Arc, Brave). Safari and Firefox are not supported; non-Chromium users see a friendly fallback page.
 
 ## Stack
 
@@ -30,7 +30,7 @@ graph LR
         Store --> IDB[(IndexedDB)]
     end
 
-    Store --> Share[/share/id/ route]
+    Store --> Share["/share/[id] route"]
     P --> Legend[Legend panel]
     Legend --> Store
 ```
