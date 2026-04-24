@@ -16,7 +16,9 @@ const config: Config = {
     "src/**/*.{ts,tsx}",
     "!src/**/*.d.ts",
     "!src/app/layout.tsx",
+    // placeholder page — replaced in a later PR
     "!src/app/page.tsx",
+    // shadcn/ui generated components — never modified, not our code
     "!src/components/ui/**",
   ],
   coverageThreshold: {
