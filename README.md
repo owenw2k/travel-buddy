@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Travel Buddy
 
-## Getting Started
+Interactive map to track regions you've visited, driven through, or lived in. Built with Next.js, Tailwind CSS, shadcn/ui, Zustand, and react-simple-maps.
 
-First, run the development server:
+**Live site:** [https://travel-buddy.vercel.app](https://travel-buddy.vercel.app)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Browser Compatibility
+
+**Chromium-based browsers only** (Chrome, Edge, Arc, Brave). Safari and Firefox are not supported — non-Chromium users see a friendly fallback page.
+
+## Stack
+
+- **Framework:** [Next.js](https://nextjs.org) (App Router)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com)
+- **Components:** [shadcn/ui](https://ui.shadcn.com)
+- **State:** [Zustand](https://zustand-demo.pmnd.rs)
+- **Maps:** [react-simple-maps](https://www.react-simple-maps.io)
+- **Persistence:** [idb-keyval](https://github.com/jakearchibald/idb-keyval) (IndexedDB)
+- **Testing:** Jest + React Testing Library (unit), Playwright (e2e)
+
+## Architecture
+
+```mermaid
+graph LR
+    subgraph Client
+        P[page.tsx] --> MC[MapContainer]
+        MC --> WM[WorldMap] & AM[AmericaMap]
+        WM & AM --> S[Selector per region]
+        S --> Store[Zustand store]
+        Store --> IDB[(IndexedDB)]
+    end
+
+    Store --> Share[/share/id/ route]
+    P --> Legend[Legend panel]
+    Legend --> Store
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Install dependencies
+pnpm install
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Start development server
+pnpm dev
 
-## Learn More
+# Run unit tests with coverage
+pnpm test:coverage
 
-To learn more about Next.js, take a look at the following resources:
+# Run e2e tests
+pnpm test:e2e
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Type check
+pnpm typecheck
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Lint
+pnpm lint
+```
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Production:** `main` branch auto-deploys to Vercel
+- **Preview:** Feature branches get preview URLs via Vercel
