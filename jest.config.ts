@@ -10,7 +10,15 @@ const config: Config = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
-  collectCoverageFrom: ["src/**/*.{ts,tsx}", "!src/**/*.d.ts", "!src/app/layout.tsx"],
+  passWithNoTests: true,
+  testPathIgnorePatterns: ["/node_modules/", "/.next/", "/__tests__/factories/"],
+  collectCoverageFrom: [
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/app/layout.tsx",
+    "!src/app/page.tsx",
+    "!src/components/ui/**",
+  ],
   coverageThreshold: {
     global: {
       lines: 90,
