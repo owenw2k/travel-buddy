@@ -129,11 +129,11 @@ describe("WorldMap", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("closes the dialog when onClose is called", async () => {
+  it("closes the popover when the close button is clicked", async () => {
     render(<WorldMap />);
     await userEvent.click(screen.getByRole("button", { name: "United States" }));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    await userEvent.click(screen.getByRole("button", { name: /close/i }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
@@ -147,5 +147,22 @@ describe("WorldMap", () => {
   it("renders geographies in a container with the screenshot data attribute", () => {
     render(<WorldMap />);
     expect(document.querySelector("[data-screenshot='world-map']")).toBeInTheDocument();
+  });
+
+  it("renders zoom control buttons", () => {
+    render(<WorldMap />);
+    expect(screen.getByRole("button", { name: /zoom in/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /zoom out/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /reset zoom/i })).toBeInTheDocument();
+  });
+
+  it("zoom controls are interactive", async () => {
+    render(<WorldMap />);
+    // Clicking zoom controls should not throw
+    await userEvent.click(screen.getByRole("button", { name: /zoom in/i }));
+    await userEvent.click(screen.getByRole("button", { name: /zoom out/i }));
+    await userEvent.click(screen.getByRole("button", { name: /reset zoom/i }));
+    // Map is still rendered after zoom changes
+    expect(screen.getByTestId("geo-840")).toBeInTheDocument();
   });
 });

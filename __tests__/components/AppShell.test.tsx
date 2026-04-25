@@ -7,6 +7,12 @@ jest.mock("@/lib/browser");
 jest.mock("@/components/MapContainer", () => ({
   MapContainer: () => <div data-testid="map-container" />,
 }));
+jest.mock("@/components/Header", () => ({
+  Header: () => <div data-testid="header" />,
+}));
+jest.mock("@/components/LegendPanel", () => ({
+  LegendPanel: () => <div data-testid="legend-panel" />,
+}));
 
 const mockIsChromium = isChromium as jest.MockedFunction<typeof isChromium>;
 
@@ -15,10 +21,12 @@ beforeEach(() => {
 });
 
 describe("AppShell", () => {
-  it("shows the map container for Chromium browsers", async () => {
+  it("shows the full app layout for Chromium browsers", async () => {
     mockIsChromium.mockReturnValue(true);
     render(<AppShell />);
     await waitFor(() => {
+      expect(screen.getByTestId("header")).toBeInTheDocument();
+      expect(screen.getByTestId("legend-panel")).toBeInTheDocument();
       expect(screen.getByTestId("map-container")).toBeInTheDocument();
     });
   });
@@ -34,10 +42,8 @@ describe("AppShell", () => {
   it("does not render user-visible content before the browser check resolves", () => {
     mockIsChromium.mockReturnValue(true);
     const { container } = render(<AppShell />);
-    // After effects flush, the map container should appear, not visible content
-    // from the placeholder. The placeholder is aria-hidden.
+    // Either the placeholder (pre-effect) or the app layout (post-effect) is present.
     const ariaHidden = container.querySelector("[aria-hidden='true']");
-    // Either the placeholder (pre-effect) or the map (post-effect) is present.
     const mapContainer = container.querySelector("[data-testid='map-container']");
     expect(ariaHidden !== null || mapContainer !== null).toBe(true);
   });

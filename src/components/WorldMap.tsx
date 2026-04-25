@@ -7,7 +7,8 @@
 import { useState } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 
-import { RegionDialog } from "@/components/RegionDialog";
+import { RegionPopover } from "@/components/RegionPopover";
+import { ZoomControls } from "@/components/ZoomControls";
 import { useMapStore } from "@/store/mapStore";
 
 import type { ReactElement } from "react";
@@ -22,6 +23,9 @@ const HOVER_FILL = "#b8b2ab";
 
 /** The stroke color between countries. */
 const STROKE_COLOR = "#a09890";
+
+/** Maximum zoom level for the world map. */
+const MAX_ZOOM = 8;
 
 /** A region selected by the user, awaiting dialog interaction. */
 type SelectedRegion = {
@@ -47,23 +51,50 @@ const selectRegion = (id: string, name: string, setSelected: (r: SelectedRegion)
  *
  * Each country is colored by its assigned legend category. Clicking or
  * pressing Enter/Space on a country opens a RegionDialog for legend
- * assignment and note editing. Supports pan and zoom via ZoomableGroup.
+ * assignment and note editing. Supports pan and zoom via ZoomableGroup (both
+ * mouse/touch and the ZoomControls overlay buttons).
+ *
+ * Zoom and center are controlled: `onMoveEnd` syncs them back after user
+ * drag/pinch gestures, and ZoomControls callbacks update them programmatically.
  *
  * The GeoJSON is fetched lazily from /world.json (served from public/).
  *
- * @returns An interactive SVG world map with a region dialog overlay.
+ * @returns An interactive SVG world map with a region dialog overlay and zoom controls.
  */
 export const WorldMap = (): ReactElement => {
   const { legends, regions } = useMapStore();
   const [selected, setSelected] = useState<SelectedRegion | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [center, setCenter] = useState<[number, number]>([0, 0]);
 
   const legendColors = Object.fromEntries(legends.map((l) => [l.id, l.color]));
 
+  const handleZoomIn = () => {
+    setZoom((z) => Math.min(z * 1.5, MAX_ZOOM));
+  };
+
+  const handleZoomOut = () => {
+    setZoom((z) => Math.max(z / 1.5, 1));
+  };
+
+  const handleReset = () => {
+    setZoom(1);
+    setCenter([0, 0]);
+  };
+
   return (
     <>
-      <div className="h-full w-full" data-screenshot="world-map">
+      <div className="relative h-full w-full" data-screenshot="world-map">
         <ComposableMap projectionConfig={{ scale: 147 }} style={{ width: "100%", height: "100%" }}>
-          <ZoomableGroup>
+          <ZoomableGroup
+            zoom={zoom}
+            center={center}
+            maxZoom={MAX_ZOOM}
+            onMoveEnd={({ coordinates, zoom: newZoom }) => {
+              setCenter(coordinates);
+              setZoom(newZoom);
+            }}
+          >
             <Geographies geography={GEO_URL}>
               {({ geographies }) =>
                 geographies.map((geo) => {
@@ -115,13 +146,13 @@ export const WorldMap = (): ReactElement => {
             </Geographies>
           </ZoomableGroup>
         </ComposableMap>
+        <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onReset={handleReset} />
       </div>
       {selected && (
-        <RegionDialog
+        <RegionPopover
           key={selected.id}
           regionId={selected.id}
           regionName={selected.name}
-          isOpen={true}
           onClose={() => {
             setSelected(null);
           }}

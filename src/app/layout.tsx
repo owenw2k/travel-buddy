@@ -1,6 +1,8 @@
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 
 import "./globals.css";
 
@@ -14,23 +16,34 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+const fraunces = Fraunces({
+  variable: "--font-heading",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "Travel Buddy",
   description: "Track the regions you've visited, driven through, and lived in.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+/**
+ * Root layout wrapping all pages with fonts, theme provider, and base styles.
+ *
+ * @param children - Page content rendered inside the layout.
+ * @returns The HTML shell with ThemeProvider and font variables applied.
+ */
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${fraunces.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="h-full">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
