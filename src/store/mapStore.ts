@@ -118,89 +118,102 @@ export type MapStore = MapState & {
  * @example
  * const { world, setWorld } = useMapStore();
  */
-export const useMapStore = create<MapStore>()((set, get) => ({
-  ...INITIAL_STATE,
+export const useMapStore = create<MapStore>()((set, get) => {
+  /**
+   * Extracts only the serializable MapState fields from the store.
+   * Called before every saveState to avoid passing action functions to
+   * IndexedDB, which uses the structured clone algorithm and cannot clone
+   * functions.
+   */
+  const snapshot = (): MapState => {
+    const { world, legends, regions } = get();
+    return { world, legends, regions };
+  };
 
-  setWorld: (world) => {
-    set({ world });
-    void saveState({ ...get(), world });
-  },
+  return {
+    ...INITIAL_STATE,
 
-  addLegend: (input) => {
-    const legend: Legend = { id: crypto.randomUUID(), ...input };
-    const legends = [...get().legends, legend];
-    set({ legends });
-    void saveState({ ...get(), legends });
-  },
+    setWorld: (world) => {
+      set({ world });
+      void saveState(snapshot());
+    },
 
-  removeLegend: (id) => {
-    const legends = get().legends.filter((l) => l.id !== id);
+    addLegend: (input) => {
+      const legend: Legend = { id: crypto.randomUUID(), ...input };
+      const legends = [...get().legends, legend];
+      set({ legends });
+      void saveState(snapshot());
+    },
 
-    // Clear the legend from any regions that reference it.
-    const regions: Record<string, RegionEntry> = {};
-    for (const [regionId, entry] of Object.entries(get().regions)) {
-      if (entry.legendId === id) {
-        if (entry.note) {
-          regions[regionId] = { legendId: "", note: entry.note };
+    removeLegend: (id) => {
+      const legends = get().legends.filter((l) => l.id !== id);
+
+      // Clear the legend from any regions that reference it.
+      const regions: Record<string, RegionEntry> = {};
+      for (const [regionId, entry] of Object.entries(get().regions)) {
+        if (entry.legendId === id) {
+          if (entry.note) {
+            regions[regionId] = { legendId: "", note: entry.note };
+          }
+          // If no note either, drop the entry entirely.
+        } else {
+          regions[regionId] = entry;
         }
-        // If no note either, drop the entry entirely.
-      } else {
-        regions[regionId] = entry;
       }
-    }
 
-    set({ legends, regions });
-    void saveState({ ...get(), legends, regions });
-  },
+      set({ legends, regions });
+      void saveState(snapshot());
+    },
 
-  assignRegion: (regionId, legendId) => {
-    const existing = get().regions[regionId];
-    const regions = {
-      ...get().regions,
-      [regionId]: { legendId, note: existing?.note ?? "" },
-    };
-    set({ regions });
-    void saveState({ ...get(), regions });
-  },
+    assignRegion: (regionId, legendId) => {
+      const existing = get().regions[regionId];
+      const regions = {
+        ...get().regions,
+        [regionId]: { legendId, note: existing?.note ?? "" },
+      };
+      set({ regions });
+      void saveState(snapshot());
+    },
 
-  unassignRegion: (regionId) => {
-    const existing = get().regions[regionId];
-    const regions = { ...get().regions };
+    unassignRegion: (regionId) => {
+      const existing = get().regions[regionId];
+      const regions = { ...get().regions };
 
-    if (existing?.note) {
-      regions[regionId] = { legendId: "", note: existing.note };
-    } else {
-      delete regions[regionId];
-    }
+      if (existing?.note) {
+        regions[regionId] = { legendId: "", note: existing.note };
+      } else {
+        delete regions[regionId];
+      }
 
-    set({ regions });
-    void saveState({ ...get(), regions });
-  },
+      set({ regions });
+      void saveState(snapshot());
+    },
 
-  setRegionNote: (regionId, note) => {
-    const existing = get().regions[regionId];
-    const regions = { ...get().regions };
+    setRegionNote: (regionId, note) => {
+      const existing = get().regions[regionId];
+      const regions = { ...get().regions };
 
-    if (note === "" && !existing?.legendId) {
-      // No legend and no note: drop the entry.
-      delete regions[regionId];
-    } else {
-      regions[regionId] = { legendId: existing?.legendId ?? "", note };
-    }
+      if (note === "" && !existing?.legendId) {
+        // No legend and no note: drop the entry.
+        delete regions[regionId];
+      } else {
+        regions[regionId] = { legendId: existing?.legendId ?? "", note };
+      }
 
-    set({ regions });
-    void saveState({ ...get(), regions });
-  },
+      set({ regions });
+      void saveState(snapshot());
+    },
 
-  clearData: () => {
-    set(INITIAL_STATE);
-    void saveState(INITIAL_STATE);
-  },
+    clearData: () => {
+      set(INITIAL_STATE);
+      void saveState(INITIAL_STATE);
+    },
 
-  hydrate: async () => {
-    const saved = await loadState();
-    if (saved) {
-      set(saved);
-    }
-  },
-}));
+    hydrate: async () => {
+      const saved = await loadState();
+      if (saved) {
+        set(saved);
+      }
+    },
+  };
+});
