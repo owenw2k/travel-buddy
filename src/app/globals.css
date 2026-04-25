@@ -8,6 +8,7 @@
   /* Fonts */
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+  --font-heading: var(--font-heading);
 
   /* Palette tokens */
   --color-background: var(--background);

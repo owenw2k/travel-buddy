@@ -50,14 +50,35 @@ declare module "react-simple-maps" {
     children?: ReactNode;
   }) => JSX.Element;
 
+  /** Coordinates and zoom level reported by ZoomableGroup move callbacks. */
+  type MoveEndResult = {
+    /** Current map center as [longitude, latitude]. */
+    coordinates: [number, number];
+    /** Current zoom level. */
+    zoom: number;
+  };
+
   /**
    * Adds pan and zoom behaviour to its child map layers.
    *
+   * When `zoom` and `center` are passed as props, ZoomableGroup operates in
+   * controlled mode: the parent owns the zoom/pan state and receives updates
+   * via `onMoveEnd`.
+   *
+   * @param zoom - Current zoom level (default 1).
+   * @param center - Geographic center as [longitude, latitude] (default [0, 0]).
+   * @param minZoom - Minimum allowed zoom level (default 1).
+   * @param maxZoom - Maximum allowed zoom level (default 8).
+   * @param onMoveEnd - Called when the user finishes a drag or pinch gesture.
    * @param children - Map layers to make pannable/zoomable.
    */
   export const ZoomableGroup: (props: {
+    zoom?: number;
+    center?: [number, number];
+    minZoom?: number;
+    maxZoom?: number;
+    onMoveEnd?: (result: MoveEndResult) => void;
     children?: ReactNode;
-    [key: string]: unknown;
   }) => JSX.Element;
 
   /**

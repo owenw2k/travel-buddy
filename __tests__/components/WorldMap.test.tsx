@@ -148,4 +148,21 @@ describe("WorldMap", () => {
     render(<WorldMap />);
     expect(document.querySelector("[data-screenshot='world-map']")).toBeInTheDocument();
   });
+
+  it("renders zoom control buttons", () => {
+    render(<WorldMap />);
+    expect(screen.getByRole("button", { name: /zoom in/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /zoom out/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /reset zoom/i })).toBeInTheDocument();
+  });
+
+  it("zoom controls are interactive", async () => {
+    render(<WorldMap />);
+    // Clicking zoom controls should not throw
+    await userEvent.click(screen.getByRole("button", { name: /zoom in/i }));
+    await userEvent.click(screen.getByRole("button", { name: /zoom out/i }));
+    await userEvent.click(screen.getByRole("button", { name: /reset zoom/i }));
+    // Map is still rendered after zoom changes
+    expect(screen.getByTestId("geo-840")).toBeInTheDocument();
+  });
 });

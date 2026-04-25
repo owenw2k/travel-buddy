@@ -23,6 +23,9 @@ jest.mock("react-simple-maps", () => {
     ComposableMap: ({ children }: { children: ReactNode }) => (
       <div data-testid="composable-map">{children}</div>
     ),
+    ZoomableGroup: ({ children }: { children: ReactNode }) => (
+      <div data-testid="zoomable-group">{children}</div>
+    ),
     Geographies: ({ children }: { children: (args: { geographies: MockGeo[] }) => ReactNode }) => (
       <div data-testid="geographies">{children({ geographies: mockGeos })}</div>
     ),
@@ -102,7 +105,7 @@ describe("AmericaMap", () => {
     expect(screen.getByRole("heading", { name: "Texas" })).toBeInTheDocument();
   });
 
-  it("opens a region dialog when Enter is pressed on a state", async () => {
+  it("opens a region dialog when Enter is pressed on a state", () => {
     render(<AmericaMap />);
     // Use fireEvent.keyDown to bypass the button's Enter→click conversion,
     // ensuring the onKeyDown handler in AmericaMap is actually called.
@@ -112,7 +115,7 @@ describe("AmericaMap", () => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
-  it("opens a region dialog when Space is pressed on a state", async () => {
+  it("opens a region dialog when Space is pressed on a state", () => {
     render(<AmericaMap />);
     fireEvent.keyDown(screen.getByRole("button", { name: "California" }), {
       key: " ",
@@ -147,5 +150,20 @@ describe("AmericaMap", () => {
   it("renders the map in a container with the screenshot data attribute", () => {
     render(<AmericaMap />);
     expect(document.querySelector("[data-screenshot='us-map']")).toBeInTheDocument();
+  });
+
+  it("renders zoom control buttons", () => {
+    render(<AmericaMap />);
+    expect(screen.getByRole("button", { name: /zoom in/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /zoom out/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /reset zoom/i })).toBeInTheDocument();
+  });
+
+  it("zoom controls are interactive", async () => {
+    render(<AmericaMap />);
+    await userEvent.click(screen.getByRole("button", { name: /zoom in/i }));
+    await userEvent.click(screen.getByRole("button", { name: /zoom out/i }));
+    await userEvent.click(screen.getByRole("button", { name: /reset zoom/i }));
+    expect(screen.getByTestId("geo-06")).toBeInTheDocument();
   });
 });
