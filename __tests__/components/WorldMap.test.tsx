@@ -129,11 +129,11 @@ describe("WorldMap", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("closes the dialog when onClose is called", async () => {
+  it("closes the popover when the close button is clicked", async () => {
     render(<WorldMap />);
     await userEvent.click(screen.getByRole("button", { name: "United States" }));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    await userEvent.click(screen.getByRole("button", { name: /close/i }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 

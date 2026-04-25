@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 
-import { RegionDialog } from "@/components/RegionDialog";
+import { RegionPopover } from "@/components/RegionPopover";
 import { ZoomControls } from "@/components/ZoomControls";
 import { useMapStore } from "@/store/mapStore";
 
@@ -149,11 +149,10 @@ export const WorldMap = (): ReactElement => {
         <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onReset={handleReset} />
       </div>
       {selected && (
-        <RegionDialog
+        <RegionPopover
           key={selected.id}
           regionId={selected.id}
           regionName={selected.name}
-          isOpen={true}
           onClose={() => {
             setSelected(null);
           }}
