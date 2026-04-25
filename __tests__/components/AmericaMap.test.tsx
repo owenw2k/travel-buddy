@@ -174,4 +174,28 @@ describe("AmericaMap", () => {
     await userEvent.click(screen.getByRole("button", { name: /reset zoom/i }));
     expect(screen.getByTestId("geo-06")).toBeInTheDocument();
   });
+
+  it("closes the panel when zoom in is clicked", async () => {
+    render(<AmericaMap />);
+    await userEvent.click(screen.getByRole("button", { name: "California" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /zoom in/i }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("closes the panel when zoom out is clicked", async () => {
+    render(<AmericaMap />);
+    await userEvent.click(screen.getByRole("button", { name: "California" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /zoom out/i }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("closes the panel when reset zoom is clicked", async () => {
+    render(<AmericaMap />);
+    await userEvent.click(screen.getByRole("button", { name: "California" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /reset zoom/i }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
 });

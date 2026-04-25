@@ -5,13 +5,24 @@
  */
 
 import { useRef, useState } from "react";
-import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  ZoomableGroup,
+  type MoveEndResult,
+} from "react-simple-maps";
+
+/** ZoomableGroup extended with onMoveStart, which exists at runtime but is absent from the published types. */
+const PannableZoomableGroup = ZoomableGroup as ComponentType<
+  React.ComponentProps<typeof ZoomableGroup> & { onMoveStart?: () => void }
+>;
 
 import { RegionPanel } from "@/components/RegionPanel";
 import { ZoomControls } from "@/components/ZoomControls";
 import { useMapStore } from "@/store/mapStore";
 
-import type { MouseEvent, ReactElement } from "react";
+import type { ComponentType, MouseEvent, ReactElement } from "react";
 
 const GEO_URL = "/world.json";
 
@@ -57,15 +68,20 @@ export const WorldMap = (): ReactElement => {
 
   const legendColors = Object.fromEntries(legends.map((l) => [l.id, l.color]));
 
+  const closePanel = () => setSelected(null);
+
   const handleZoomIn = () => {
+    closePanel();
     setZoom((z) => Math.min(z * 1.5, MAX_ZOOM));
   };
 
   const handleZoomOut = () => {
+    closePanel();
     setZoom((z) => Math.max(z / 1.5, 1));
   };
 
   const handleReset = () => {
+    closePanel();
     setZoom(1);
     setCenter([0, 0]);
   };
@@ -86,11 +102,12 @@ export const WorldMap = (): ReactElement => {
       onClick={() => setSelected(null)}
     >
       <ComposableMap projectionConfig={{ scale: 147 }} style={{ width: "100%", height: "100%" }}>
-        <ZoomableGroup
+        <PannableZoomableGroup
           zoom={zoom}
           center={center}
           maxZoom={MAX_ZOOM}
-          onMoveEnd={({ coordinates, zoom: newZoom }) => {
+          onMoveStart={closePanel}
+          onMoveEnd={({ coordinates, zoom: newZoom }: MoveEndResult) => {
             setCenter(coordinates);
             setZoom(newZoom);
           }}
@@ -148,7 +165,7 @@ export const WorldMap = (): ReactElement => {
               })
             }
           </Geographies>
-        </ZoomableGroup>
+        </PannableZoomableGroup>
       </ComposableMap>
       <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onReset={handleReset} />
       {selected && (

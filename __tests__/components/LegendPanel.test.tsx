@@ -62,11 +62,46 @@ describe("LegendPanel", () => {
     expect(screen.getByRole("button", { name: /remove driven/i })).toBeInTheDocument();
   });
 
-  it("calls removeLegend with the correct id when a remove button is clicked", async () => {
+  it("shows inline confirmation when a remove button is clicked", async () => {
+    setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /remove visited/i }));
+    expect(screen.getByText(/remove\?/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /confirm remove visited/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+  });
+
+  it("calls removeLegend when the confirm button is clicked", async () => {
     const { removeLegend } = setupStore();
     render(<LegendPanel />);
     await userEvent.click(screen.getByRole("button", { name: /remove visited/i }));
+    await userEvent.click(screen.getByRole("button", { name: /confirm remove visited/i }));
     expect(removeLegend).toHaveBeenCalledWith("visited");
+  });
+
+  it("does not call removeLegend when cancel is clicked", async () => {
+    const { removeLegend } = setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /remove visited/i }));
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    expect(removeLegend).not.toHaveBeenCalled();
+  });
+
+  it("restores the normal state after cancel", async () => {
+    setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /remove visited/i }));
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    expect(screen.queryByText(/remove\?/i)).not.toBeInTheDocument();
+    expect(screen.getByText("Visited")).toBeInTheDocument();
+  });
+
+  it("only shows confirmation for the clicked legend, not others", async () => {
+    setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /remove visited/i }));
+    expect(screen.getByText("Driven")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /remove driven/i })).toBeInTheDocument();
   });
 
   it("renders an empty list gracefully when there are no legends", () => {
