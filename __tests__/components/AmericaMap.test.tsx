@@ -6,7 +6,7 @@ import { useMapStore } from "@/store/mapStore";
 
 import { createLegend } from "../factories/createLegend";
 
-import type { KeyboardEvent, ReactNode } from "react";
+import type { KeyboardEvent, MouseEvent, ReactNode } from "react";
 
 jest.mock("@/store/mapStore");
 
@@ -37,7 +37,7 @@ jest.mock("react-simple-maps", () => {
       "aria-label": ariaLabel,
     }: {
       geography: MockGeo;
-      onClick?: () => void;
+      onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
       onKeyDown?: (e: KeyboardEvent<HTMLButtonElement>) => void;
       tabIndex?: number;
       "aria-label"?: string;
@@ -131,11 +131,19 @@ describe("AmericaMap", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("closes the popover when the close button is clicked", async () => {
+  it("closes the panel when the close button is clicked", async () => {
     render(<AmericaMap />);
     await userEvent.click(screen.getByRole("button", { name: "California" }));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: /close/i }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("closes the panel when the map background is clicked", async () => {
+    render(<AmericaMap />);
+    await userEvent.click(screen.getByRole("button", { name: "California" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await userEvent.click(document.querySelector("[data-screenshot='us-map']")!);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
@@ -165,5 +173,29 @@ describe("AmericaMap", () => {
     await userEvent.click(screen.getByRole("button", { name: /zoom out/i }));
     await userEvent.click(screen.getByRole("button", { name: /reset zoom/i }));
     expect(screen.getByTestId("geo-06")).toBeInTheDocument();
+  });
+
+  it("closes the panel when zoom in is clicked", async () => {
+    render(<AmericaMap />);
+    await userEvent.click(screen.getByRole("button", { name: "California" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /zoom in/i }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("closes the panel when zoom out is clicked", async () => {
+    render(<AmericaMap />);
+    await userEvent.click(screen.getByRole("button", { name: "California" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /zoom out/i }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("closes the panel when reset zoom is clicked", async () => {
+    render(<AmericaMap />);
+    await userEvent.click(screen.getByRole("button", { name: "California" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /reset zoom/i }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });

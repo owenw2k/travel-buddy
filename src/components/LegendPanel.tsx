@@ -4,7 +4,8 @@
  * Sidebar panel listing legend categories with color swatches and remove buttons.
  */
 
-import { Trash2 } from "lucide-react";
+import { Check, Trash2, X } from "lucide-react";
+import { useState } from "react";
 
 import { AddLegendModal } from "@/components/AddLegendModal";
 import { Button } from "@/components/ui/button";
@@ -15,14 +16,16 @@ import type { ReactElement } from "react";
 /**
  * Sidebar panel showing all legend categories.
  *
- * Each entry displays a color swatch and name. A trash button removes the
- * category and unassigns it from all regions. The "Add category" button at
- * the bottom opens the AddLegendModal.
+ * Each entry displays a color swatch and name. Clicking the trash button
+ * enters an inline confirmation state — the item shows "Remove?" with confirm
+ * and cancel buttons before calling removeLegend. The "Add category" button
+ * at the bottom opens the AddLegendModal.
  *
  * @returns A `<aside>` sidebar listing legend items and an add-category trigger.
  */
 export const LegendPanel = (): ReactElement => {
   const { legends, removeLegend } = useMapStore();
+  const [confirmId, setConfirmId] = useState<string | null>(null);
 
   return (
     <aside
@@ -40,18 +43,45 @@ export const LegendPanel = (): ReactElement => {
               style={{ backgroundColor: legend.color }}
               aria-hidden="true"
             />
-            <span className="flex-1 truncate text-sm text-foreground">{legend.name}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 shrink-0 text-muted-foreground hover:text-destructive"
-              onClick={() => {
-                removeLegend(legend.id);
-              }}
-              aria-label={`Remove ${legend.name}`}
-            >
-              <Trash2 className="h-3 w-3" />
-            </Button>
+            {confirmId === legend.id ? (
+              <>
+                <span className="flex-1 truncate text-xs text-destructive">Remove?</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 shrink-0 text-destructive hover:text-destructive"
+                  onClick={() => {
+                    removeLegend(legend.id);
+                    setConfirmId(null);
+                  }}
+                  aria-label={`Confirm remove ${legend.name}`}
+                >
+                  <Check className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 shrink-0 text-muted-foreground"
+                  onClick={() => setConfirmId(null)}
+                  aria-label="Cancel"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <span className="flex-1 truncate text-sm text-foreground">{legend.name}</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 shrink-0 text-muted-foreground hover:text-destructive"
+                  onClick={() => setConfirmId(legend.id)}
+                  aria-label={`Remove ${legend.name}`}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </>
+            )}
           </li>
         ))}
       </ul>
