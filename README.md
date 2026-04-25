@@ -2,7 +2,7 @@
 
 Interactive map to track regions you've visited, driven through, or lived in. Built with Next.js, Tailwind CSS, shadcn/ui, Zustand, and react-simple-maps.
 
-**Live site:** [https://travel-buddy.vercel.app](https://travel-buddy.vercel.app)
+**Live site:** [https://travel-buddy-sooty-ten.vercel.app](https://travel-buddy-sooty-ten.vercel.app)
 
 ## Browser Compatibility
 

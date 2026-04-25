@@ -4,14 +4,14 @@
  * Interactive SVG US states map component.
  */
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 
-import { RegionPopover } from "@/components/RegionPopover";
+import { RegionPanel } from "@/components/RegionPanel";
 import { ZoomControls } from "@/components/ZoomControls";
 import { useMapStore } from "@/store/mapStore";
 
-import type { ReactElement } from "react";
+import type { MouseEvent, ReactElement } from "react";
 
 const GEO_URL = "/us.json";
 
@@ -27,46 +27,37 @@ const STROKE_COLOR = "#a09890";
 /** Maximum zoom level for the US map. */
 const MAX_ZOOM = 8;
 
-/** A region selected by the user, awaiting dialog interaction. */
+/** A region selected by the user, with its click position for panel placement. */
 type SelectedRegion = {
   /** FIPS state code, used as the store region key. */
   id: string;
-  /** Human-readable state name shown in the dialog title. */
+  /** Human-readable state name shown in the panel header. */
   name: string;
-};
-
-/**
- * Opens the region dialog for the given feature.
- *
- * @param id - Stringified feature id (FIPS code).
- * @param name - State name from GeoJSON properties.
- * @param setSelected - Setter from useState.
- */
-const selectRegion = (id: string, name: string, setSelected: (r: SelectedRegion) => void) => {
-  setSelected({ id, name });
+  /** Click coordinates relative to the map container. */
+  position: { x: number; y: number };
 };
 
 /**
  * US states map rendered with react-simple-maps using the Albers USA projection.
  *
  * Each state is colored by its assigned legend category. Clicking or pressing
- * Enter/Space on a state opens a RegionDialog for legend assignment and note
- * editing. Supports pan and zoom via ZoomableGroup (both mouse/touch and the
- * ZoomControls overlay buttons).
+ * Enter/Space on a state opens a RegionPanel near the click point. The panel
+ * uses chip buttons for immediate one-click legend assignment. Clicking the
+ * map background closes the panel. Supports pan and zoom via ZoomableGroup
+ * and the ZoomControls overlay.
  *
  * The Albers USA projection repositions Alaska and Hawaii as insets. Center
  * is tracked for controlled zoom so programmatic zoom-in stays anchored to
  * the current view position.
  *
- * The GeoJSON is fetched lazily from /us.json (served from public/).
- *
- * @returns An interactive SVG US map with a region dialog overlay and zoom controls.
+ * @returns An interactive SVG US map with a floating region panel and zoom controls.
  */
 export const AmericaMap = (): ReactElement => {
   const { legends, regions } = useMapStore();
   const [selected, setSelected] = useState<SelectedRegion | null>(null);
   const [zoom, setZoom] = useState(1);
   const [center, setCenter] = useState<[number, number]>([0, 0]);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const legendColors = Object.fromEntries(legends.map((l) => [l.id, l.color]));
 
@@ -83,86 +74,100 @@ export const AmericaMap = (): ReactElement => {
     setCenter([0, 0]);
   };
 
-  return (
-    <>
-      <div className="relative h-full w-full" data-screenshot="us-map">
-        <ComposableMap
-          projection="geoAlbersUsa"
-          projectionConfig={{ scale: 900 }}
-          style={{ width: "100%", height: "100%" }}
-        >
-          <ZoomableGroup
-            zoom={zoom}
-            center={center}
-            maxZoom={MAX_ZOOM}
-            onMoveEnd={({ coordinates, zoom: newZoom }) => {
-              setCenter(coordinates);
-              setZoom(newZoom);
-            }}
-          >
-            <Geographies geography={GEO_URL}>
-              {({ geographies }) =>
-                geographies.map((geo) => {
-                  const regionId = String(geo.id);
-                  const entry = regions[regionId];
-                  const assignedColor = entry?.legendId
-                    ? (legendColors[entry.legendId] ?? DEFAULT_FILL)
-                    : DEFAULT_FILL;
-                  const name = geo.properties["name"] as string;
-                  const ariaLabel = entry?.legendId ? `${name} (assigned)` : name;
+  const getClickPosition = (e: MouseEvent): { x: number; y: number } => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    return {
+      x: e.clientX - (rect?.left ?? 0),
+      y: e.clientY - (rect?.top ?? 0),
+    };
+  };
 
-                  return (
-                    <Geography
-                      key={geo.rsmKey}
-                      geography={geo}
-                      tabIndex={0}
-                      aria-label={ariaLabel}
-                      onClick={() => {
-                        selectRegion(regionId, name, setSelected);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          selectRegion(regionId, name, setSelected);
-                        }
-                      }}
-                      style={{
-                        default: {
-                          fill: assignedColor,
-                          outline: "none",
-                          stroke: STROKE_COLOR,
-                          strokeWidth: 0.5,
-                        },
-                        hover: {
-                          fill: entry?.legendId ? assignedColor : HOVER_FILL,
-                          outline: "none",
-                          stroke: STROKE_COLOR,
-                          strokeWidth: 0.5,
-                          cursor: "pointer",
-                        },
-                        pressed: {
-                          fill: assignedColor,
-                          outline: "none",
-                        },
-                      }}
-                    />
-                  );
-                })
-              }
-            </Geographies>
-          </ZoomableGroup>
-        </ComposableMap>
-        <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onReset={handleReset} />
-      </div>
+  return (
+    <div
+      ref={containerRef}
+      className="relative h-full w-full"
+      data-screenshot="us-map"
+      onClick={() => setSelected(null)}
+    >
+      <ComposableMap
+        projection="geoAlbersUsa"
+        projectionConfig={{ scale: 900 }}
+        style={{ width: "100%", height: "100%" }}
+      >
+        <ZoomableGroup
+          zoom={zoom}
+          center={center}
+          maxZoom={MAX_ZOOM}
+          onMoveEnd={({ coordinates, zoom: newZoom }) => {
+            setCenter(coordinates);
+            setZoom(newZoom);
+          }}
+        >
+          <Geographies geography={GEO_URL}>
+            {({ geographies }) =>
+              geographies.map((geo) => {
+                const regionId = String(geo.id);
+                const entry = regions[regionId];
+                const assignedColor = entry?.legendId
+                  ? (legendColors[entry.legendId] ?? DEFAULT_FILL)
+                  : DEFAULT_FILL;
+                const name = geo.properties["name"] as string;
+                const ariaLabel = entry?.legendId ? `${name} (assigned)` : name;
+
+                return (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    tabIndex={0}
+                    aria-label={ariaLabel}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelected({ id: regionId, name, position: getClickPosition(e) });
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        const rect = containerRef.current?.getBoundingClientRect();
+                        const x = (rect?.width ?? 0) / 2;
+                        const y = (rect?.height ?? 0) / 4;
+                        setSelected({ id: regionId, name, position: { x, y } });
+                      }
+                    }}
+                    style={{
+                      default: {
+                        fill: assignedColor,
+                        outline: "none",
+                        stroke: STROKE_COLOR,
+                        strokeWidth: 0.5,
+                      },
+                      hover: {
+                        fill: entry?.legendId ? assignedColor : HOVER_FILL,
+                        outline: "none",
+                        stroke: STROKE_COLOR,
+                        strokeWidth: 0.5,
+                        cursor: "pointer",
+                      },
+                      pressed: {
+                        fill: assignedColor,
+                        outline: "none",
+                      },
+                    }}
+                  />
+                );
+              })
+            }
+          </Geographies>
+        </ZoomableGroup>
+      </ComposableMap>
+      <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onReset={handleReset} />
       {selected && (
-        <RegionPopover
+        <RegionPanel
           key={selected.id}
           regionId={selected.id}
           regionName={selected.name}
-          onClose={() => {
-            setSelected(null);
-          }}
+          position={selected.position}
+          onClose={() => setSelected(null)}
         />
       )}
-    </>
+    </div>
   );
 };
