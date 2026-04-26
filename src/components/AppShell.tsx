@@ -53,9 +53,9 @@ export const AppShell = (): ReactElement => {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <Header />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 flex-col-reverse overflow-hidden md:flex-row">
         <LegendPanel />
-        <main className="flex-1 overflow-hidden">
+        <main className="min-h-0 flex-1 overflow-hidden">
           <MapContainer />
         </main>
       </div>
