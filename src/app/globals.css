@@ -57,6 +57,12 @@
 :root {
   --radius: 0.625rem;
 
+  /* Map colors */
+  --map-ocean: #b8d4ec;
+  --map-land: #e8dcc8;
+  --map-land-hover: #d5c9b0;
+  --map-border: #b8a888;
+
   /* Custom palette */
   --background: #f6f4f0;
   --surface: #ede9e2;
@@ -99,6 +105,12 @@
 }
 
 .dark {
+  /* Map colors */
+  --map-ocean: #0d1520;
+  --map-land: #1e2d3d;
+  --map-land-hover: #263548;
+  --map-border: #2d4255;
+
   --background: #171a14;
   --surface: #1f2219;
   --border: #2d3328;
