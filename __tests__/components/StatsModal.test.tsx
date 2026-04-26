@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { StatsModal } from "@/components/StatsModal";
@@ -41,7 +41,7 @@ const driven = createLegend({ id: "driven", name: "Driven", color: "#d97706" });
 
 const setupStore = (
   legends = [visited, driven],
-  regions: Record<string, { legendId: string; note: string }> = {}
+  regions: Record<string, { legendId: string; note: string; world?: boolean }> = {}
 ) => {
   mockUseMapStore.mockReturnValue({
     legends,
@@ -50,6 +50,7 @@ const setupStore = (
     setWorld: jest.fn(),
     addLegend: jest.fn(),
     removeLegend: jest.fn(),
+    updateLegend: jest.fn(),
     assignRegion: jest.fn(),
     unassignRegion: jest.fn(),
     setRegionNote: jest.fn(),
@@ -102,15 +103,15 @@ describe("StatsModal", () => {
     expect(screen.getByText(/1 region marked/i)).toBeInTheDocument();
   });
 
-  it("renders a row for each legend category", async () => {
-    setupStore([visited, driven], {});
+  it("shows World and United States section labels", async () => {
+    setupStore([visited], {});
     render(<StatsModal />);
     await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
-    expect(screen.getByText("Visited")).toBeInTheDocument();
-    expect(screen.getByText("Driven")).toBeInTheDocument();
+    expect(screen.getByText("World")).toBeInTheDocument();
+    expect(screen.getByText("United States")).toBeInTheDocument();
   });
 
-  it("shows the count for each legend", async () => {
+  it("shows correct counts in the world section for regions without a world flag", async () => {
     setupStore([visited, driven], {
       "840": { legendId: "visited", note: "" },
       "250": { legendId: "visited", note: "" },
@@ -118,20 +119,24 @@ describe("StatsModal", () => {
     });
     render(<StatsModal />);
     await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
-    const counts = screen.getAllByRole("listitem");
-    // Visited row shows count 2, Driven row shows count 1
-    expect(counts[0]).toHaveTextContent("2");
-    expect(counts[1]).toHaveTextContent("1");
+    const worldSection = screen.getByTestId("stats-world");
+    const items = within(worldSection).getAllByRole("listitem");
+    expect(items[0]).toHaveTextContent("2");
+    expect(items[1]).toHaveTextContent("1");
   });
 
-  it("shows progress bars for each legend", async () => {
-    setupStore([visited, driven], { "840": { legendId: "visited", note: "" } });
+  it("routes world=true entries to the world section and world=false to US", async () => {
+    setupStore([visited], {
+      "840": { legendId: "visited", note: "", world: true },
+      "01": { legendId: "visited", note: "", world: false },
+      "48": { legendId: "visited", note: "", world: false },
+    });
     render(<StatsModal />);
     await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
-    const bars = screen.getAllByRole("progressbar");
-    expect(bars).toHaveLength(2);
-    expect(bars[0]).toHaveAttribute("aria-valuenow", "100");
-    expect(bars[1]).toHaveAttribute("aria-valuenow", "0");
+    const worldSection = screen.getByTestId("stats-world");
+    const usSection = screen.getByTestId("stats-us");
+    expect(within(worldSection).getByRole("listitem")).toHaveTextContent("1");
+    expect(within(usSection).getByRole("listitem")).toHaveTextContent("2");
   });
 
   it("shows 'no categories yet' message when legend list is empty", async () => {
@@ -168,7 +173,7 @@ describe("StatsModal", () => {
     render(<StatsModal />);
     await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
     expect(screen.getByText(/2 regions marked/i)).toBeInTheDocument();
-    const counts = screen.getAllByRole("listitem");
-    expect(counts[0]).toHaveTextContent("1");
+    const worldSection = screen.getByTestId("stats-world");
+    expect(within(worldSection).getByRole("listitem")).toHaveTextContent("1");
   });
 });

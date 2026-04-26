@@ -22,6 +22,11 @@ export type RegionEntry = {
   legendId: string;
   /** User note for this region, e.g. "Visited 2023". Empty string if none. */
   note: string;
+  /**
+   * Which map this region belongs to. True = world map, false = US map.
+   * Undefined on entries saved before this field was introduced — treated as world.
+   */
+  world?: boolean;
 };
 
 /** Full persisted state shape for the Zustand map store. */

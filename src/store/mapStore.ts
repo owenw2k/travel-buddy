@@ -182,10 +182,11 @@ export const useMapStore = create<MapStore>()((set, get) => {
     },
 
     assignRegion: (regionId, legendId) => {
-      const existing = get().regions[regionId];
+      const { world, regions: current } = get();
+      const existing = current[regionId];
       const regions = {
-        ...get().regions,
-        [regionId]: { legendId, note: existing?.note ?? "" },
+        ...current,
+        [regionId]: { legendId, note: existing?.note ?? "", world },
       };
       set({ regions });
       void saveState(snapshot());
