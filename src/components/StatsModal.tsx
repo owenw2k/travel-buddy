@@ -36,10 +36,10 @@ export const StatsModal = (): ReactElement => {
   const total = assignedEntries.length;
 
   /** Count of assigned regions per legend id. */
-  const countsByLegend = Object.fromEntries(legends.map((l) => [l.id, 0]));
+  const countsByLegend: Record<string, number> = Object.fromEntries(legends.map((l) => [l.id, 0]));
   for (const entry of assignedEntries) {
     if (entry.legendId in countsByLegend) {
-      countsByLegend[entry.legendId] = (countsByLegend[entry.legendId] ?? 0) + 1;
+      countsByLegend[entry.legendId] += 1;
     }
   }
 
@@ -70,7 +70,7 @@ export const StatsModal = (): ReactElement => {
           ) : (
             <ul className="flex flex-col gap-3 pt-1">
               {legends.map((legend) => {
-                const count = countsByLegend[legend.id] ?? 0;
+                const count = countsByLegend[legend.id];
                 const pct = total > 0 ? Math.round((count / total) * 100) : 0;
 
                 return (

@@ -12,11 +12,20 @@ jest.mock("@/components/ui/dialog", () => ({
   Dialog: ({
     children,
     open,
+    onOpenChange,
   }: {
     children: React.ReactNode;
     open?: boolean;
     onOpenChange?: (v: boolean) => void;
-  }) => (open ? <div>{children}</div> : null),
+  }) =>
+    open ? (
+      <div>
+        <button data-testid="mock-dialog-close" onClick={() => onOpenChange?.(false)}>
+          close dialog
+        </button>
+        {children}
+      </div>
+    ) : null,
   DialogContent: ({ children }: { children: React.ReactNode }) => (
     <div role="dialog">{children}</div>
   ),
@@ -132,6 +141,15 @@ describe("StatsModal", () => {
     expect(screen.getByText(/no legend categories yet/i)).toBeInTheDocument();
   });
 
+  it("closes the dialog when onOpenChange fires with false", async () => {
+    setupStore();
+    render(<StatsModal />);
+    await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await userEvent.click(screen.getByTestId("mock-dialog-close"));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
   it("ignores regions with no legendId when counting totals", async () => {
     setupStore([visited], {
       "840": { legendId: "visited", note: "" },
@@ -140,5 +158,17 @@ describe("StatsModal", () => {
     render(<StatsModal />);
     await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
     expect(screen.getByText(/1 region marked/i)).toBeInTheDocument();
+  });
+
+  it("ignores regions assigned to a deleted legend", async () => {
+    setupStore([visited], {
+      "840": { legendId: "visited", note: "" },
+      "250": { legendId: "deleted-legend", note: "" },
+    });
+    render(<StatsModal />);
+    await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
+    expect(screen.getByText(/2 regions marked/i)).toBeInTheDocument();
+    const counts = screen.getAllByRole("listitem");
+    expect(counts[0]).toHaveTextContent("1");
   });
 });
