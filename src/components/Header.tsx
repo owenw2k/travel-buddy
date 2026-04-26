@@ -57,14 +57,16 @@ export const Header = (): ReactElement => {
       <span className="font-heading text-base font-semibold tracking-tight text-foreground md:text-xl">
         Travel Buddy
       </span>
-      <div className="flex items-center rounded-full border border-border bg-muted p-0.5">
+      <div className="relative flex items-center rounded-full border border-border bg-muted p-0.5">
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] rounded-full bg-background shadow-sm transition-transform duration-200 ease-in-out${!world ? " translate-x-full" : ""}`}
+        />
         <button
           onClick={() => setWorld(true)}
           aria-pressed={world}
-          className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
-            world
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
+          className={`relative z-10 flex-1 rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+            world ? "text-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
         >
           World
@@ -72,10 +74,8 @@ export const Header = (): ReactElement => {
         <button
           onClick={() => setWorld(false)}
           aria-pressed={!world}
-          className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
-            !world
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
+          className={`relative z-10 flex-1 rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+            !world ? "text-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
         >
           <span className="hidden sm:inline">United States</span>
