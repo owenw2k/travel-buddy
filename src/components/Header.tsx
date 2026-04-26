@@ -65,7 +65,7 @@ export const Header = (): ReactElement => {
         <button
           onClick={() => setWorld(true)}
           aria-pressed={world}
-          className={`relative z-10 flex-1 rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+          className={`relative z-10 flex-1 whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium transition-colors ${
             world ? "text-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -74,7 +74,7 @@ export const Header = (): ReactElement => {
         <button
           onClick={() => setWorld(false)}
           aria-pressed={!world}
-          className={`relative z-10 flex-1 rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+          className={`relative z-10 flex-1 whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium transition-colors ${
             !world ? "text-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
         >
