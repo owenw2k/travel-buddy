@@ -8,19 +8,21 @@ import { Check, Pencil, Trash2, X } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { AddLegendModal } from "@/components/AddLegendModal";
-import { Button } from "@/components/ui/button";
 import { useMapStore } from "@/store/mapStore";
 
 import type { ReactElement } from "react";
+
+/** Shared classes for the plain icon action buttons — no hover background box. */
+const iconBtn = "flex h-6 w-6 shrink-0 items-center justify-center transition-colors";
 
 /**
  * Sidebar panel showing all legend categories.
  *
  * Each entry displays a color swatch and name. Clicking the pencil icon
  * enters inline edit mode: the swatch dot becomes a clickable button that
- * opens a hidden color picker, and the name becomes a text input. Clicking the trash button enters inline remove
- * confirmation before calling removeLegend. The "Add category" button at
- * the bottom opens the AddLegendModal.
+ * opens a hidden color picker, and the name becomes a text input. Clicking
+ * the trash button enters inline remove confirmation before calling
+ * removeLegend. The "Add category" button at the bottom opens AddLegendModal.
  *
  * Only one row can be in edit or confirm mode at a time — entering either
  * state clears the other.
@@ -61,7 +63,10 @@ export const LegendPanel = (): ReactElement => {
       </h2>
       <ul className="flex flex-row items-center gap-2 md:flex-col md:items-stretch md:gap-1">
         {legends.map((legend) => (
-          <li key={legend.id} className="flex shrink-0 items-center gap-2 rounded-md px-1 py-1">
+          <li
+            key={legend.id}
+            className="flex shrink-0 items-center gap-2 rounded-md px-1 py-1 transition-colors hover:bg-background/70"
+          >
             {editId === legend.id ? (
               <>
                 <input
@@ -96,24 +101,20 @@ export const LegendPanel = (): ReactElement => {
                   aria-label="Legend name"
                   autoFocus
                 />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 shrink-0 text-foreground"
+                <button
+                  className={`${iconBtn} text-foreground hover:text-foreground/70`}
                   onClick={() => saveEdit(legend.id, legend.name)}
                   aria-label={`Save ${legend.name}`}
                 >
                   <Check className="h-3 w-3" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 shrink-0 text-muted-foreground"
+                </button>
+                <button
+                  className={`${iconBtn} text-muted-foreground hover:text-foreground`}
                   onClick={cancelEdit}
                   aria-label="Cancel edit"
                 >
                   <X className="h-3 w-3" />
-                </Button>
+                </button>
               </>
             ) : confirmId === legend.id ? (
               <>
@@ -123,10 +124,8 @@ export const LegendPanel = (): ReactElement => {
                   aria-hidden="true"
                 />
                 <span className="flex-1 truncate text-xs text-destructive">Remove?</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 shrink-0 text-destructive hover:text-destructive"
+                <button
+                  className={`${iconBtn} text-destructive hover:text-destructive/70`}
                   onClick={() => {
                     removeLegend(legend.id);
                     setConfirmId(null);
@@ -134,16 +133,14 @@ export const LegendPanel = (): ReactElement => {
                   aria-label={`Confirm remove ${legend.name}`}
                 >
                   <Check className="h-3 w-3" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 shrink-0 text-muted-foreground"
+                </button>
+                <button
+                  className={`${iconBtn} text-muted-foreground hover:text-foreground`}
                   onClick={() => setConfirmId(null)}
                   aria-label="Cancel"
                 >
                   <X className="h-3 w-3" />
-                </Button>
+                </button>
               </>
             ) : (
               <>
@@ -153,19 +150,15 @@ export const LegendPanel = (): ReactElement => {
                   aria-hidden="true"
                 />
                 <span className="flex-1 truncate text-sm text-foreground">{legend.name}</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground"
+                <button
+                  className={`${iconBtn} text-muted-foreground hover:text-foreground`}
                   onClick={() => startEdit(legend.id, legend.name, legend.color)}
                   aria-label={`Edit ${legend.name}`}
                 >
                   <Pencil className="h-3 w-3" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 shrink-0 text-muted-foreground hover:text-destructive"
+                </button>
+                <button
+                  className={`${iconBtn} text-muted-foreground hover:text-destructive`}
                   onClick={() => {
                     setConfirmId(legend.id);
                     setEditId(null);
@@ -173,7 +166,7 @@ export const LegendPanel = (): ReactElement => {
                   aria-label={`Remove ${legend.name}`}
                 >
                   <Trash2 className="h-3 w-3" />
-                </Button>
+                </button>
               </>
             )}
           </li>

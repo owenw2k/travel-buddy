@@ -60,7 +60,7 @@ export const StatsModal = (): ReactElement => {
       <Dialog open={open} onOpenChange={(o) => setOpen(o)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Stats</DialogTitle>
+            <DialogTitle>Your Travels</DialogTitle>
             <DialogDescription>{totalLabel}</DialogDescription>
           </DialogHeader>
           {legends.length === 0 ? (
