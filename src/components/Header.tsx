@@ -4,10 +4,20 @@
  * Application header with the app title, map toggle, dark mode toggle, and clear-data action.
  */
 
-import { Check, Trash2, X } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useMapStore } from "@/store/mapStore";
 
@@ -19,25 +29,22 @@ import type { ReactElement } from "react";
  * Contains:
  * - App title using the Fraunces heading font
  * - World / United States map toggle buttons
- * - Clear-data button with inline confirmation
+ * - Clear-data button that opens a confirmation dialog before wiping all state
  * - Dark mode toggle
  *
  * The map toggle buttons reflect the current `world` value from the Zustand
  * store. Clicking one calls `setWorld` to switch views; MapContainer reacts
  * to the store change and swaps the active map.
  *
- * The clear-data button uses a two-step inline confirm (same pattern as the
- * legend remove button) to guard against accidental data loss.
- *
  * @returns A sticky header rendered inside a `<header>` element.
  */
 export const Header = (): ReactElement => {
   const { world, setWorld, clearData } = useMapStore();
-  const [isConfirming, setIsConfirming] = useState(false);
+  const [isClearOpen, setIsClearOpen] = useState(false);
 
   const handleClearConfirm = () => {
     clearData();
-    setIsConfirming(false);
+    setIsClearOpen(false);
   };
 
   return (
@@ -71,39 +78,34 @@ export const Header = (): ReactElement => {
         </Button>
       </div>
       <div className="flex items-center gap-2">
-        {isConfirming ? (
-          <>
-            <span className="text-xs text-destructive">Clear all data?</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-destructive hover:text-destructive"
-              onClick={handleClearConfirm}
-              aria-label="Confirm clear all data"
-            >
-              <Check className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground"
-              onClick={() => setIsConfirming(false)}
-              aria-label="Cancel"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </>
-        ) : (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-destructive"
-            onClick={() => setIsConfirming(true)}
-            aria-label="Clear all data"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+          aria-label="Clear all data"
+          onClick={() => setIsClearOpen(true)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+        <AlertDialog open={isClearOpen} onOpenChange={setIsClearOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Clear all data?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This removes all your legend categories and region assignments. It cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={handleClearConfirm}
+              >
+                Clear all data
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         <DarkModeToggle />
       </div>
     </header>
