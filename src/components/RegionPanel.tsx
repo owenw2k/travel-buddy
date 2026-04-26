@@ -61,11 +61,11 @@ export const RegionPanel = ({ regionId, regionName, position, onClose }: Props):
       role="dialog"
       aria-label={regionName}
       style={{ left, top, width: PANEL_WIDTH }}
-      className="absolute z-10 rounded-xl border border-border bg-surface p-3 shadow-lg"
+      className="absolute z-10 rounded-2xl border border-border bg-surface p-3 shadow-xl"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-foreground">{regionName}</h3>
+        <h3 className="font-heading text-base font-semibold text-foreground">{regionName}</h3>
         <Button
           variant="ghost"
           size="icon"

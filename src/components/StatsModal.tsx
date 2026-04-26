@@ -60,7 +60,7 @@ export const StatsModal = (): ReactElement => {
       <Dialog open={open} onOpenChange={(o) => setOpen(o)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Stats</DialogTitle>
+            <DialogTitle className="font-heading">Stats</DialogTitle>
             <DialogDescription>{totalLabel}</DialogDescription>
           </DialogHeader>
           {legends.length === 0 ? (
@@ -76,7 +76,7 @@ export const StatsModal = (): ReactElement => {
                 return (
                   <li key={legend.id} className="flex items-center gap-3">
                     <span
-                      className="h-3 w-3 shrink-0 rounded-full"
+                      className="h-4 w-4 shrink-0 rounded"
                       style={{ backgroundColor: legend.color }}
                       aria-hidden="true"
                     />
