@@ -76,7 +76,7 @@ export const LegendPanel = (): ReactElement => {
                 <button
                   type="button"
                   onClick={() => colorInputRef.current?.click()}
-                  className="inline-block h-3 w-3 shrink-0 cursor-pointer rounded-full ring-offset-1 hover:ring-2 hover:ring-border"
+                  className="h-5 w-5 shrink-0 cursor-pointer rounded ring-offset-1 hover:ring-2 hover:ring-border"
                   style={{ backgroundColor: editColor }}
                   aria-label={`Change color for ${legend.name}`}
                 />
@@ -118,7 +118,7 @@ export const LegendPanel = (): ReactElement => {
             ) : confirmId === legend.id ? (
               <>
                 <span
-                  className="inline-block h-3 w-3 shrink-0 rounded-full"
+                  className="h-5 w-5 shrink-0 rounded"
                   style={{ backgroundColor: legend.color }}
                   aria-hidden="true"
                 />
@@ -148,7 +148,7 @@ export const LegendPanel = (): ReactElement => {
             ) : (
               <>
                 <span
-                  className="inline-block h-3 w-3 shrink-0 rounded-full"
+                  className="h-5 w-5 shrink-0 rounded"
                   style={{ backgroundColor: legend.color }}
                   aria-hidden="true"
                 />
