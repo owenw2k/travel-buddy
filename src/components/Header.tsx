@@ -54,7 +54,7 @@ export const Header = (): ReactElement => {
       className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface px-4"
       data-screenshot="header"
     >
-      <span className="font-heading text-base font-semibold tracking-tight text-foreground md:text-xl">
+      <span className="text-base font-semibold tracking-tight text-foreground md:text-xl">
         Travel Buddy
       </span>
       <div className="flex items-center rounded-full border border-border bg-muted p-0.5">
