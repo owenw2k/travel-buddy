@@ -54,10 +54,10 @@ export const Header = (): ReactElement => {
       className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface px-4"
       data-screenshot="header"
     >
-      <span className="font-heading text-xl font-semibold tracking-tight text-foreground">
+      <span className="font-heading text-base font-semibold tracking-tight text-foreground md:text-xl">
         Travel Buddy
       </span>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 md:gap-2">
         <Button
           variant={world ? "default" : "outline"}
           size="sm"
@@ -76,7 +76,8 @@ export const Header = (): ReactElement => {
           }}
           aria-pressed={!world}
         >
-          United States
+          <span className="hidden sm:inline">United States</span>
+          <span className="sm:hidden">US</span>
         </Button>
       </div>
       <div className="flex items-center gap-1">
