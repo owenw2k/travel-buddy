@@ -134,6 +134,33 @@ describe("removeLegend", () => {
   });
 });
 
+describe("updateLegend", () => {
+  it("updates the name and color of the specified legend", () => {
+    act(() => {
+      useMapStore.getState().updateLegend("visited", { name: "Been there", color: "#7c3aed" });
+    });
+    const updated = useMapStore.getState().legends.find((l) => l.id === "visited");
+    expect(updated?.name).toBe("Been there");
+    expect(updated?.color).toBe("#7c3aed");
+  });
+
+  it("does not affect other legends", () => {
+    act(() => {
+      useMapStore.getState().updateLegend("visited", { name: "Been there", color: "#7c3aed" });
+    });
+    const driven = useMapStore.getState().legends.find((l) => l.id === "driven");
+    expect(driven?.name).toBe("Driven");
+    expect(driven?.color).toBe("#d97706");
+  });
+
+  it("calls saveState after updating", () => {
+    act(() => {
+      useMapStore.getState().updateLegend("visited", { name: "Been there", color: "#7c3aed" });
+    });
+    expect(mockSaveState).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("assignRegion", () => {
   it("creates a region entry with the given legend", () => {
     act(() => {

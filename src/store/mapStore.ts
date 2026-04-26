@@ -64,6 +64,16 @@ export type MapStore = MapState & {
   removeLegend: (id: string) => void;
 
   /**
+   * Updates the name and color of an existing legend category.
+   *
+   * @param id - ID of the legend to update.
+   * @param updates - New name and color values to apply.
+   * @example
+   * store.updateLegend("visited", { name: "Been there", color: "#7c3aed" });
+   */
+  updateLegend: (id: string, updates: Omit<Legend, "id">) => void;
+
+  /**
    * Assigns a legend category to a region.
    *
    * @param regionId - GeoJSON region identifier (e.g. country ISO code or US state FIPS).
@@ -141,6 +151,12 @@ export const useMapStore = create<MapStore>()((set, get) => {
     addLegend: (input) => {
       const legend: Legend = { id: crypto.randomUUID(), ...input };
       const legends = [...get().legends, legend];
+      set({ legends });
+      void saveState(snapshot());
+    },
+
+    updateLegend: (id, updates) => {
+      const legends = get().legends.map((l) => (l.id === id ? { ...l, ...updates } : l));
       set({ legends });
       void saveState(snapshot());
     },

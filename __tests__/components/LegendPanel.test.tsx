@@ -21,9 +21,11 @@ const setupStore = (
   ]
 ) => {
   const removeLegend = jest.fn();
+  const updateLegend = jest.fn();
   mockUseMapStore.mockReturnValue({
     legends,
     removeLegend,
+    updateLegend,
     regions: {},
     world: true,
     setWorld: jest.fn(),
@@ -34,7 +36,7 @@ const setupStore = (
     clearData: jest.fn(),
     hydrate: jest.fn().mockResolvedValue(undefined),
   } as ReturnType<typeof useMapStore>);
-  return { removeLegend };
+  return { removeLegend, updateLegend };
 };
 
 beforeEach(() => {
@@ -121,5 +123,102 @@ describe("LegendPanel", () => {
     setupStore();
     render(<LegendPanel />);
     expect(document.querySelector("[data-screenshot='legend-panel']")).toBeInTheDocument();
+  });
+
+  it("renders an edit button for each legend", () => {
+    setupStore();
+    render(<LegendPanel />);
+    expect(screen.getByRole("button", { name: /edit visited/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /edit driven/i })).toBeInTheDocument();
+  });
+
+  it("shows the edit form when the pencil button is clicked", async () => {
+    setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /edit visited/i }));
+    expect(screen.getByRole("textbox", { name: /legend name/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /save visited/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cancel edit/i })).toBeInTheDocument();
+  });
+
+  it("pre-populates the edit form with the current name and color", async () => {
+    setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /edit visited/i }));
+    expect(screen.getByRole("textbox", { name: /legend name/i })).toHaveValue("Visited");
+  });
+
+  it("calls updateLegend with new values when save is clicked", async () => {
+    const { updateLegend } = setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /edit visited/i }));
+    const input = screen.getByRole("textbox", { name: /legend name/i });
+    await userEvent.clear(input);
+    await userEvent.type(input, "Been there");
+    await userEvent.click(screen.getByRole("button", { name: /save visited/i }));
+    expect(updateLegend).toHaveBeenCalledWith("visited", { name: "Been there", color: "#16a34a" });
+  });
+
+  it("falls back to the original name when saved with an empty name", async () => {
+    const { updateLegend } = setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /edit visited/i }));
+    await userEvent.clear(screen.getByRole("textbox", { name: /legend name/i }));
+    await userEvent.click(screen.getByRole("button", { name: /save visited/i }));
+    expect(updateLegend).toHaveBeenCalledWith("visited", { name: "Visited", color: "#16a34a" });
+  });
+
+  it("does not call updateLegend when cancel is clicked", async () => {
+    const { updateLegend } = setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /edit visited/i }));
+    await userEvent.click(screen.getByRole("button", { name: /cancel edit/i }));
+    expect(updateLegend).not.toHaveBeenCalled();
+  });
+
+  it("restores the normal state after cancelling an edit", async () => {
+    setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /edit visited/i }));
+    await userEvent.click(screen.getByRole("button", { name: /cancel edit/i }));
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    expect(screen.getByText("Visited")).toBeInTheDocument();
+  });
+
+  it("saves on Enter key in the name input", async () => {
+    const { updateLegend } = setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /edit visited/i }));
+    const input = screen.getByRole("textbox", { name: /legend name/i });
+    await userEvent.clear(input);
+    await userEvent.type(input, "Been there{Enter}");
+    expect(updateLegend).toHaveBeenCalledWith("visited", { name: "Been there", color: "#16a34a" });
+  });
+
+  it("cancels on Escape key in the name input", async () => {
+    const { updateLegend } = setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /edit visited/i }));
+    await userEvent.keyboard("{Escape}");
+    expect(updateLegend).not.toHaveBeenCalled();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+  });
+
+  it("clears a pending remove confirmation when entering edit mode", async () => {
+    setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /remove visited/i }));
+    expect(screen.getByText(/remove\?/i)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /edit driven/i }));
+    expect(screen.queryByText(/remove\?/i)).not.toBeInTheDocument();
+  });
+
+  it("clears a pending edit when entering remove confirmation mode", async () => {
+    setupStore();
+    render(<LegendPanel />);
+    await userEvent.click(screen.getByRole("button", { name: /edit visited/i }));
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /remove driven/i }));
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   });
 });
