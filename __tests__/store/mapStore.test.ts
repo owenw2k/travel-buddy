@@ -122,7 +122,11 @@ describe("removeLegend", () => {
     act(() => {
       useMapStore.getState().removeLegend("visited");
     });
-    expect(useMapStore.getState().regions["US-NY"]).toEqual({ legendId: "driven", note: "" });
+    expect(useMapStore.getState().regions["US-NY"]).toEqual({
+      legendId: "driven",
+      note: "",
+      world: true,
+    });
     expect(useMapStore.getState().regions["US-CA"]).toBeUndefined();
   });
 
@@ -166,7 +170,11 @@ describe("assignRegion", () => {
     act(() => {
       useMapStore.getState().assignRegion("FR", "visited");
     });
-    expect(useMapStore.getState().regions["FR"]).toEqual({ legendId: "visited", note: "" });
+    expect(useMapStore.getState().regions["FR"]).toEqual({
+      legendId: "visited",
+      note: "",
+      world: true,
+    });
   });
 
   it("preserves an existing note when reassigning the legend", () => {
@@ -179,7 +187,11 @@ describe("assignRegion", () => {
     act(() => {
       useMapStore.getState().assignRegion("FR", "driven");
     });
-    expect(useMapStore.getState().regions["FR"]).toEqual({ legendId: "driven", note: "Paris!" });
+    expect(useMapStore.getState().regions["FR"]).toEqual({
+      legendId: "driven",
+      note: "Paris!",
+      world: true,
+    });
   });
 
   it("calls saveState after assigning", () => {
