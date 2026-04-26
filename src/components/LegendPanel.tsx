@@ -35,7 +35,7 @@ export const LegendPanel = (): ReactElement => {
       <h2 className="hidden text-sm font-semibold uppercase tracking-wider text-muted-foreground md:block">
         Legend
       </h2>
-      <ul className="flex flex-row items-center gap-2 md:flex-col md:gap-1">
+      <ul className="flex flex-row items-center gap-2 md:flex-col md:items-stretch md:gap-1">
         {legends.map((legend) => (
           <li key={legend.id} className="flex shrink-0 items-center gap-2 rounded-md px-1 py-1">
             <span
