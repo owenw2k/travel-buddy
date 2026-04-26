@@ -1,13 +1,14 @@
 "use client";
 
 /**
- * Application header with the app title, map toggle, dark mode toggle, and clear-data action.
+ * Application header with the app title, map toggle, stats modal, dark mode toggle, and clear-data action.
  */
 
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { StatsModal } from "@/components/StatsModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,6 +30,7 @@ import type { ReactElement } from "react";
  * Contains:
  * - App title using the Fraunces heading font
  * - World / United States map toggle buttons
+ * - Stats modal button showing per-legend region counts
  * - Clear-data button that opens a confirmation dialog before wiping all state
  * - Dark mode toggle
  *
@@ -77,7 +79,8 @@ export const Header = (): ReactElement => {
           United States
         </Button>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
+        <StatsModal />
         <Button
           variant="ghost"
           size="icon"
