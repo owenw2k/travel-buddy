@@ -58,7 +58,11 @@ export const LegendPanel = (): ReactElement => {
       </h2>
       <ul className="flex flex-row items-center gap-2 md:flex-col md:items-stretch md:gap-1">
         {legends.map((legend) => (
-          <li key={legend.id} className="flex shrink-0 items-center gap-1 rounded-md px-1 py-1">
+          <li
+            key={legend.id}
+            className="flex shrink-0 items-center gap-1 rounded-r-md border-l-[3px] px-1.5 py-1 transition-colors"
+            style={{ borderLeftColor: editId === legend.id ? editColor : legend.color }}
+          >
             {editId === legend.id ? (
               <>
                 <input

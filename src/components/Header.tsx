@@ -57,28 +57,30 @@ export const Header = (): ReactElement => {
       <span className="font-heading text-base font-semibold tracking-tight text-foreground md:text-xl">
         Travel Buddy
       </span>
-      <div className="flex items-center gap-1 md:gap-2">
-        <Button
-          variant={world ? "default" : "outline"}
-          size="sm"
-          onClick={() => {
-            setWorld(true);
-          }}
+      <div className="flex items-center rounded-full border border-border bg-muted p-0.5">
+        <button
+          onClick={() => setWorld(true)}
           aria-pressed={world}
+          className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+            world
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
         >
           World
-        </Button>
-        <Button
-          variant={!world ? "default" : "outline"}
-          size="sm"
-          onClick={() => {
-            setWorld(false);
-          }}
+        </button>
+        <button
+          onClick={() => setWorld(false)}
           aria-pressed={!world}
+          className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+            !world
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
         >
           <span className="hidden sm:inline">United States</span>
           <span className="sm:hidden">US</span>
-        </Button>
+        </button>
       </div>
       <div className="flex items-center gap-1">
         <StatsModal />
