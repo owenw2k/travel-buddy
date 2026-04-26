@@ -109,11 +109,6 @@ export const LegendPanel = (): ReactElement => {
               </>
             ) : confirmId === legend.id ? (
               <>
-                <span
-                  className="inline-block h-3 w-3 shrink-0 rounded-full"
-                  style={{ backgroundColor: legend.color }}
-                  aria-hidden="true"
-                />
                 <span className="flex-1 truncate text-xs text-destructive">Remove?</span>
                 <Button
                   variant="ghost"
@@ -139,11 +134,6 @@ export const LegendPanel = (): ReactElement => {
               </>
             ) : (
               <>
-                <span
-                  className="inline-block h-3 w-3 shrink-0 rounded-full"
-                  style={{ backgroundColor: legend.color }}
-                  aria-hidden="true"
-                />
                 <span className="flex-1 truncate text-sm text-foreground">{legend.name}</span>
                 <Button
                   variant="ghost"
