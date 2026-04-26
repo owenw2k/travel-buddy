@@ -26,14 +26,14 @@ import type { ComponentType, MouseEvent, ReactElement } from "react";
 
 const GEO_URL = "/world.json";
 
-/** The default fill for unassigned regions. */
-const DEFAULT_FILL = "#d1cdc6";
+/** The default fill for unassigned regions — resolves via CSS variable so it adapts to theme. */
+const DEFAULT_FILL = "var(--map-land)";
 
 /** The fill for unassigned regions on hover. */
-const HOVER_FILL = "#b8b2ab";
+const HOVER_FILL = "var(--map-land-hover)";
 
 /** The stroke color between countries. */
-const STROKE_COLOR = "#a09890";
+const STROKE_COLOR = "var(--map-border)";
 
 /** Maximum zoom level for the world map. */
 const MAX_ZOOM = 8;

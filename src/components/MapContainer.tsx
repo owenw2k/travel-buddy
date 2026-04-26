@@ -61,7 +61,10 @@ export const MapContainer = (): ReactElement => {
   }, [hydrate]);
 
   return (
-    <div className="flex h-full w-full items-center justify-center bg-background">
+    <div
+      className="flex h-full w-full items-center justify-center"
+      style={{ backgroundColor: "var(--map-ocean)" }}
+    >
       {world ? <WorldMap /> : <AmericaMap />}
     </div>
   );
