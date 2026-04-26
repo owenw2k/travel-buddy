@@ -56,7 +56,7 @@ export const LegendPanel = (): ReactElement => {
       className="flex w-full shrink-0 flex-row items-center gap-2 overflow-x-auto border-t border-border bg-surface p-3 md:w-56 md:flex-col md:items-stretch md:gap-3 md:overflow-x-visible md:overflow-y-auto md:border-r md:border-t-0 md:p-4"
       data-screenshot="legend-panel"
     >
-      <h2 className="hidden border-b border-border pb-2 font-heading text-base font-semibold text-foreground md:block">
+      <h2 className="hidden border-b border-border pb-2 text-base font-semibold text-foreground md:block">
         Legend
       </h2>
       <ul className="flex flex-row items-center gap-2 md:flex-col md:items-stretch md:gap-1">

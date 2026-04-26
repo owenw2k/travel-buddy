@@ -65,7 +65,7 @@ export const RegionPanel = ({ regionId, regionName, position, onClose }: Props):
       onClick={(e) => e.stopPropagation()}
     >
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="font-heading text-base font-semibold text-foreground">{regionName}</h3>
+        <h3 className="text-base font-semibold text-foreground">{regionName}</h3>
         <Button
           variant="ghost"
           size="icon"
