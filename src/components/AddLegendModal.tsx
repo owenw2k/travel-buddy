@@ -60,10 +60,9 @@ export const AddLegendModal = (): ReactElement => {
     <>
       <Button
         size="sm"
-        className="w-full"
-        onClick={() => {
-          setIsOpen(true);
-        }}
+        variant="ghost"
+        className="shrink-0 border border-dashed border-border hover:border-accent hover:text-accent md:w-full"
+        onClick={() => setIsOpen(true)}
       >
         <Plus className="h-4 w-4" />
         Add category

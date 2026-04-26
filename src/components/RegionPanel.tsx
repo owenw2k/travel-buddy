@@ -1,13 +1,12 @@
 "use client";
 
 /**
- * Floating chip panel for assigning a legend category to a map region.
+ * Floating callout panel for assigning a legend category to a map region.
  * Anchored at the coordinates where the user clicked on the map.
  */
 
-import { X } from "lucide-react";
+import { MapPin, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { useMapStore } from "@/store/mapStore";
 
 import type { ReactElement } from "react";
@@ -28,9 +27,10 @@ type Props = {
 };
 
 /**
- * Chip-based floating panel for assigning a legend to a map region.
+ * Chip-based floating callout for assigning a legend to a map region.
  *
- * Positioned at the click coordinates inside the map container. Each legend
+ * Positioned at the click coordinates inside the map container. A small
+ * upward-pointing arrow connects the panel to the click point. Each legend
  * renders as a colored chip — clicking an unassigned chip assigns it; clicking
  * the currently assigned chip removes the assignment. Changes apply immediately
  * to the Zustand store (no Save/Cancel).
@@ -39,11 +39,12 @@ type Props = {
  * store read whenever the selected region changes.
  *
  * @param props - Region identity, click position, and close callback.
- * @returns A positioned floating panel for legend assignment.
+ * @returns A positioned floating callout panel for legend assignment.
  */
 export const RegionPanel = ({ regionId, regionName, position, onClose }: Props): ReactElement => {
   const { legends, regions, assignRegion, unassignRegion } = useMapStore();
   const currentLegendId = regions[regionId]?.legendId ?? null;
+  const currentLegend = legends.find((l) => l.id === currentLegendId);
 
   const handleLegendClick = (legendId: string) => {
     if (currentLegendId === legendId) {
@@ -61,20 +62,29 @@ export const RegionPanel = ({ regionId, regionName, position, onClose }: Props):
       role="dialog"
       aria-label={regionName}
       style={{ left, top, width: PANEL_WIDTH }}
-      className="absolute z-10 rounded-xl border border-border bg-surface p-3 shadow-lg"
+      className="animate-in fade-in slide-in-from-bottom-1 absolute z-10 rounded-2xl border border-border/60 bg-surface p-3 shadow-xl duration-150"
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-foreground">{regionName}</h3>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-5 w-5 text-muted-foreground"
+      <div
+        aria-hidden="true"
+        className="absolute -top-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-l border-t border-border/60 bg-surface"
+      />
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <MapPin
+            className="h-3.5 w-3.5 shrink-0"
+            style={{ color: currentLegend?.color ?? "var(--color-text-muted)" }}
+            aria-hidden="true"
+          />
+          <h3 className="truncate text-base font-semibold text-foreground">{regionName}</h3>
+        </div>
+        <button
+          className="flex h-5 w-5 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
           onClick={onClose}
           aria-label="Close"
         >
           <X className="h-3 w-3" />
-        </Button>
+        </button>
       </div>
       {legends.length === 0 ? (
         <p className="text-xs text-muted-foreground">No legends yet — add one in the panel.</p>
@@ -87,7 +97,7 @@ export const RegionPanel = ({ regionId, regionName, position, onClose }: Props):
               aria-pressed={currentLegendId === legend.id}
               aria-label={legend.name}
               onClick={() => handleLegendClick(legend.id)}
-              className={`rounded-full px-2.5 py-0.5 text-xs font-medium text-white transition-opacity ${
+              className={`rounded-md px-3 py-1 text-sm font-medium text-white transition-opacity ${
                 currentLegendId === legend.id
                   ? "opacity-100 ring-2 ring-white/50 ring-offset-1"
                   : "opacity-60 hover:opacity-90"

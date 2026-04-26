@@ -74,7 +74,7 @@ describe("StatsModal", () => {
     render(<StatsModal />);
     await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /stats/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /your travels/i })).toBeInTheDocument();
   });
 
   it("shows 'no regions marked yet' when nothing is assigned", async () => {
