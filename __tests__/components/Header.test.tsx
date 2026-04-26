@@ -20,6 +20,7 @@ const mockUseMapStore = useMapStore as jest.MockedFunction<typeof useMapStore>;
 
 const setupStore = (world = true) => {
   const setWorld = jest.fn();
+  const clearData = jest.fn();
   mockUseMapStore.mockReturnValue({
     world,
     setWorld,
@@ -30,10 +31,10 @@ const setupStore = (world = true) => {
     assignRegion: jest.fn(),
     unassignRegion: jest.fn(),
     setRegionNote: jest.fn(),
-    clearData: jest.fn(),
+    clearData,
     hydrate: jest.fn().mockResolvedValue(undefined),
   } as ReturnType<typeof useMapStore>);
-  return { setWorld };
+  return { setWorld, clearData };
 };
 
 beforeEach(() => {
@@ -92,5 +93,46 @@ describe("Header", () => {
     setupStore();
     render(<Header />);
     expect(screen.getByRole("button", { name: /switch to dark mode/i })).toBeInTheDocument();
+  });
+
+  it("renders the clear all data button", () => {
+    setupStore();
+    render(<Header />);
+    expect(screen.getByRole("button", { name: /clear all data/i })).toBeInTheDocument();
+  });
+
+  it("shows inline confirmation when clear all data is clicked", async () => {
+    setupStore();
+    render(<Header />);
+    await userEvent.click(screen.getByRole("button", { name: /clear all data/i }));
+    expect(screen.getByText(/clear all data\?/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /confirm clear all data/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+  });
+
+  it("calls clearData and dismisses confirmation when confirmed", async () => {
+    const { clearData } = setupStore();
+    render(<Header />);
+    await userEvent.click(screen.getByRole("button", { name: /clear all data/i }));
+    await userEvent.click(screen.getByRole("button", { name: /confirm clear all data/i }));
+    expect(clearData).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText(/clear all data\?/i)).not.toBeInTheDocument();
+  });
+
+  it("does not call clearData when cancel is clicked", async () => {
+    const { clearData } = setupStore();
+    render(<Header />);
+    await userEvent.click(screen.getByRole("button", { name: /clear all data/i }));
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    expect(clearData).not.toHaveBeenCalled();
+  });
+
+  it("dismisses confirmation without clearing when cancel is clicked", async () => {
+    setupStore();
+    render(<Header />);
+    await userEvent.click(screen.getByRole("button", { name: /clear all data/i }));
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    expect(screen.queryByText(/clear all data\?/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /clear all data/i })).toBeInTheDocument();
   });
 });
