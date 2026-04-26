@@ -11,15 +11,16 @@ import { LegendPanel } from "@/components/LegendPanel";
 import { MapContainer } from "@/components/MapContainer";
 import { NonChromiumFallback } from "@/components/NonChromiumFallback";
 import { isChromium } from "@/lib/browser";
+import { useMapStore } from "@/store/mapStore";
 
 import type { ReactElement } from "react";
 
 /**
- * Client-side app shell that gates the interactive map behind a Chromium check.
+ * Client-side app shell that gates the interactive map behind a Chromium check
+ * and loads persisted map state from IndexedDB on mount.
  *
- * Detection runs after mount (useEffect) to avoid a server/client hydration
- * mismatch: `navigator` is not available during SSR, so checking on mount
- * ensures the initial render is always consistent.
+ * Both the Chromium detection and the IndexedDB hydration run in useEffect to
+ * avoid server/client mismatches: `navigator` and IndexedDB are browser-only.
  *
  * Renders nothing visible (a transparent placeholder) until the browser check
  * completes, then shows either the full app layout (header + legend + map) or
@@ -29,6 +30,10 @@ import type { ReactElement } from "react";
  */
 export const AppShell = (): ReactElement => {
   const [isChromiumBrowser, setIsChromiumBrowser] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    void useMapStore.getState().hydrate();
+  }, []);
 
   useEffect(() => {
     // Reading navigator.userAgent is a browser-side effect — must run after
