@@ -58,11 +58,7 @@ export const LegendPanel = (): ReactElement => {
       </h2>
       <ul className="flex flex-row items-center gap-2 md:flex-col md:items-stretch md:gap-1">
         {legends.map((legend) => (
-          <li
-            key={legend.id}
-            className="flex shrink-0 items-center gap-1 rounded-r-md border-l-[3px] px-1.5 py-1 transition-colors"
-            style={{ borderLeftColor: editId === legend.id ? editColor : legend.color }}
-          >
+          <li key={legend.id} className="flex shrink-0 items-center gap-1 rounded-md px-1 py-1">
             {editId === legend.id ? (
               <>
                 <input
@@ -109,6 +105,11 @@ export const LegendPanel = (): ReactElement => {
               </>
             ) : confirmId === legend.id ? (
               <>
+                <span
+                  className="inline-block h-3 w-3 shrink-0 rounded-full"
+                  style={{ backgroundColor: legend.color }}
+                  aria-hidden="true"
+                />
                 <span className="flex-1 truncate text-xs text-destructive">Remove?</span>
                 <Button
                   variant="ghost"
@@ -134,6 +135,11 @@ export const LegendPanel = (): ReactElement => {
               </>
             ) : (
               <>
+                <span
+                  className="inline-block h-3 w-3 shrink-0 rounded-full"
+                  style={{ backgroundColor: legend.color }}
+                  aria-hidden="true"
+                />
                 <span className="flex-1 truncate text-sm text-foreground">{legend.name}</span>
                 <Button
                   variant="ghost"
