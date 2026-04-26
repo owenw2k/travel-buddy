@@ -101,7 +101,11 @@ export const WorldMap = (): ReactElement => {
       data-screenshot="world-map"
       onClick={() => setSelected(null)}
     >
-      <ComposableMap projectionConfig={{ scale: 147 }} style={{ width: "100%", height: "100%" }}>
+      <ComposableMap
+        projection="geoMercator"
+        projectionConfig={{ scale: 153 }}
+        style={{ width: "100%", height: "100%" }}
+      >
         <PannableZoomableGroup
           zoom={zoom}
           center={center}
