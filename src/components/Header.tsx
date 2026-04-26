@@ -1,13 +1,14 @@
 "use client";
 
 /**
- * Application header with the app title, map toggle, dark mode toggle, and clear-data action.
+ * Application header with the app title, map toggle, stats modal, dark mode toggle, and clear-data action.
  */
 
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { StatsModal } from "@/components/StatsModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,6 +30,7 @@ import type { ReactElement } from "react";
  * Contains:
  * - App title using the Fraunces heading font
  * - World / United States map toggle buttons
+ * - Stats modal button showing per-legend region counts
  * - Clear-data button that opens a confirmation dialog before wiping all state
  * - Dark mode toggle
  *
@@ -52,10 +54,10 @@ export const Header = (): ReactElement => {
       className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface px-4"
       data-screenshot="header"
     >
-      <span className="font-heading text-xl font-semibold tracking-tight text-foreground">
+      <span className="font-heading text-base font-semibold tracking-tight text-foreground md:text-xl">
         Travel Buddy
       </span>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 md:gap-2">
         <Button
           variant={world ? "default" : "outline"}
           size="sm"
@@ -74,10 +76,12 @@ export const Header = (): ReactElement => {
           }}
           aria-pressed={!world}
         >
-          United States
+          <span className="hidden sm:inline">United States</span>
+          <span className="sm:hidden">US</span>
         </Button>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
+        <StatsModal />
         <Button
           variant="ghost"
           size="icon"
