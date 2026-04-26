@@ -4,7 +4,7 @@
  * Interactive SVG US states map component.
  */
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   ComposableMap,
   Geographies,
@@ -74,6 +74,15 @@ export const AmericaMap = (): ReactElement => {
 
   const closePanel = () => setSelected(null);
 
+  /**
+   * Memoized move-end handler — stable reference prevents the d3 zoom
+   * instance from being torn down and re-created on every render.
+   */
+  const handleMoveEnd = useCallback(({ coordinates, zoom: newZoom }: MoveEndResult) => {
+    setCenter(coordinates);
+    setZoom(newZoom);
+  }, []);
+
   const handleZoomIn = () => {
     closePanel();
     setZoom((z) => Math.min(z * 1.5, MAX_ZOOM));
@@ -115,10 +124,7 @@ export const AmericaMap = (): ReactElement => {
           center={center}
           maxZoom={MAX_ZOOM}
           onMoveStart={closePanel}
-          onMoveEnd={({ coordinates, zoom: newZoom }: MoveEndResult) => {
-            setCenter(coordinates);
-            setZoom(newZoom);
-          }}
+          onMoveEnd={handleMoveEnd}
         >
           <Geographies geography={GEO_URL}>
             {({ geographies }) =>
