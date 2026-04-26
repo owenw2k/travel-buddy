@@ -1,10 +1,10 @@
 "use client";
 
 /**
- * Sidebar panel listing legend categories with color swatches and remove buttons.
+ * Sidebar panel listing legend categories with color swatches, inline edit, and remove buttons.
  */
 
-import { Check, Trash2, X } from "lucide-react";
+import { Check, Pencil, Trash2, X } from "lucide-react";
 import { useState } from "react";
 
 import { AddLegendModal } from "@/components/AddLegendModal";
@@ -16,16 +16,37 @@ import type { ReactElement } from "react";
 /**
  * Sidebar panel showing all legend categories.
  *
- * Each entry displays a color swatch and name. Clicking the trash button
- * enters an inline confirmation state — the item shows "Remove?" with confirm
- * and cancel buttons before calling removeLegend. The "Add category" button
- * at the bottom opens the AddLegendModal.
+ * Each entry displays a color swatch and name. Clicking the pencil icon
+ * enters inline edit mode: the swatch becomes a color picker and the name
+ * becomes a text input. Clicking the trash button enters inline remove
+ * confirmation before calling removeLegend. The "Add category" button at
+ * the bottom opens the AddLegendModal.
+ *
+ * Only one row can be in edit or confirm mode at a time — entering either
+ * state clears the other.
  *
  * @returns A `<aside>` sidebar listing legend items and an add-category trigger.
  */
 export const LegendPanel = (): ReactElement => {
-  const { legends, removeLegend } = useMapStore();
+  const { legends, removeLegend, updateLegend } = useMapStore();
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editColor, setEditColor] = useState("");
+
+  const startEdit = (id: string, name: string, color: string) => {
+    setEditId(id);
+    setEditName(name);
+    setEditColor(color);
+    setConfirmId(null);
+  };
+
+  const saveEdit = (id: string, originalName: string) => {
+    updateLegend(id, { name: editName.trim() || originalName, color: editColor });
+    setEditId(null);
+  };
+
+  const cancelEdit = () => setEditId(null);
 
   return (
     <aside
@@ -37,14 +58,58 @@ export const LegendPanel = (): ReactElement => {
       </h2>
       <ul className="flex flex-row items-center gap-2 md:flex-col md:items-stretch md:gap-1">
         {legends.map((legend) => (
-          <li key={legend.id} className="flex shrink-0 items-center gap-2 rounded-md px-1 py-1">
-            <span
-              className="inline-block h-3 w-3 shrink-0 rounded-full"
-              style={{ backgroundColor: legend.color }}
-              aria-hidden="true"
-            />
-            {confirmId === legend.id ? (
+          <li key={legend.id} className="flex shrink-0 items-center gap-1 rounded-md px-1 py-1">
+            {editId === legend.id ? (
               <>
+                <input
+                  type="color"
+                  value={editColor}
+                  onChange={(e) => setEditColor(e.target.value)}
+                  className="h-6 w-6 shrink-0 cursor-pointer rounded border border-border bg-transparent p-0"
+                  aria-label={`Color for ${legend.name}`}
+                />
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      saveEdit(legend.id, legend.name);
+                    }
+                    if (e.key === "Escape") {
+                      cancelEdit();
+                    }
+                  }}
+                  className="min-w-0 flex-1 rounded border border-border bg-background px-1 py-0.5 text-sm text-foreground outline-none focus:ring-1 focus:ring-ring"
+                  aria-label="Legend name"
+                  autoFocus
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 shrink-0 text-foreground"
+                  onClick={() => saveEdit(legend.id, legend.name)}
+                  aria-label={`Save ${legend.name}`}
+                >
+                  <Check className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 shrink-0 text-muted-foreground"
+                  onClick={cancelEdit}
+                  aria-label="Cancel edit"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </>
+            ) : confirmId === legend.id ? (
+              <>
+                <span
+                  className="inline-block h-3 w-3 shrink-0 rounded-full"
+                  style={{ backgroundColor: legend.color }}
+                  aria-hidden="true"
+                />
                 <span className="flex-1 truncate text-xs text-destructive">Remove?</span>
                 <Button
                   variant="ghost"
@@ -70,12 +135,29 @@ export const LegendPanel = (): ReactElement => {
               </>
             ) : (
               <>
+                <span
+                  className="inline-block h-3 w-3 shrink-0 rounded-full"
+                  style={{ backgroundColor: legend.color }}
+                  aria-hidden="true"
+                />
                 <span className="flex-1 truncate text-sm text-foreground">{legend.name}</span>
                 <Button
                   variant="ghost"
                   size="icon"
+                  className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground"
+                  onClick={() => startEdit(legend.id, legend.name, legend.color)}
+                  aria-label={`Edit ${legend.name}`}
+                >
+                  <Pencil className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="h-6 w-6 shrink-0 text-muted-foreground hover:text-destructive"
-                  onClick={() => setConfirmId(legend.id)}
+                  onClick={() => {
+                    setConfirmId(legend.id);
+                    setEditId(null);
+                  }}
                   aria-label={`Remove ${legend.name}`}
                 >
                   <Trash2 className="h-3 w-3" />
