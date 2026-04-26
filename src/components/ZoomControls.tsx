@@ -34,7 +34,10 @@ const clusterBtn =
  * @returns A grouped card of map zoom controls.
  */
 export const ZoomControls = ({ onZoomIn, onZoomOut, onReset }: Props): ReactElement => (
-  <div className="absolute bottom-4 left-4 flex flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-md">
+  <div
+    className="absolute bottom-4 left-4 flex flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-md"
+    data-screenshot="zoom-controls"
+  >
     <button
       className={`${clusterBtn} border-b border-border`}
       onClick={onZoomIn}
