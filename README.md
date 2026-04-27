@@ -4,10 +4,6 @@ Interactive map to track regions you've visited, driven through, or lived in. Bu
 
 **Live site:** [https://travel-buddy-sooty-ten.vercel.app](https://travel-buddy-sooty-ten.vercel.app)
 
-## Browser Compatibility
-
-**Chromium-based browsers only** (Chrome, Edge, Arc, Brave). Safari and Firefox are not supported; non-Chromium users see a friendly fallback page.
-
 ## Stack
 
 - **Framework:** [Next.js](https://nextjs.org) (App Router)
@@ -15,7 +11,7 @@ Interactive map to track regions you've visited, driven through, or lived in. Bu
 - **Components:** [shadcn/ui](https://ui.shadcn.com)
 - **State:** [Zustand](https://zustand-demo.pmnd.rs)
 - **Maps:** [react-simple-maps](https://www.react-simple-maps.io)
-- **Persistence:** [idb-keyval](https://github.com/jakearchibald/idb-keyval) (IndexedDB)
+- **Persistence:** localStorage (via `src/lib/persist.ts`)
 - **Testing:** Jest + React Testing Library (unit), Playwright (e2e)
 
 ## Architecture
@@ -27,10 +23,9 @@ graph LR
         MC --> WM[WorldMap] & AM[AmericaMap]
         WM & AM --> S[Selector per region]
         S --> Store[Zustand store]
-        Store --> IDB[(IndexedDB)]
+        Store --> LS[(localStorage)]
     end
 
-    Store --> Share["/share/[id] route"]
     P --> Legend[Legend panel]
     Legend --> Store
 ```

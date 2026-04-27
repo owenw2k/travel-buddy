@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { AddLegendModal } from "@/components/AddLegendModal";
@@ -108,6 +108,16 @@ describe("AddLegendModal", () => {
     await userEvent.click(screen.getByRole("button", { name: /add category/i }));
     await userEvent.type(screen.getByLabelText(/name/i), "Camped{Enter}");
     expect(addLegend).toHaveBeenCalledTimes(1);
+  });
+
+  it("uses the selected color when adding a legend", async () => {
+    const { addLegend } = setupStore();
+    render(<AddLegendModal />);
+    await userEvent.click(screen.getByRole("button", { name: /add category/i }));
+    fireEvent.change(screen.getByLabelText(/pick a color/i), { target: { value: "#ff5500" } });
+    await userEvent.type(screen.getByLabelText(/name/i), "Camped");
+    await userEvent.click(screen.getByRole("button", { name: /^add$/i }));
+    expect(addLegend).toHaveBeenCalledWith({ name: "Camped", color: "#ff5500" });
   });
 
   it("resets name field when dialog is closed via Cancel", async () => {

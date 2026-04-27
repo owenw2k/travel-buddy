@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { StatsModal } from "@/components/StatsModal";
@@ -163,6 +163,23 @@ describe("StatsModal", () => {
     render(<StatsModal />);
     await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
     expect(screen.getByText(/1 region marked/i)).toBeInTheDocument();
+  });
+
+  it("dims non-hovered arcs in the donut chart when an arc is hovered", async () => {
+    setupStore([visited, driven], {
+      "840": { legendId: "visited", note: "", world: true },
+      "250": { legendId: "driven", note: "", world: true },
+    });
+    render(<StatsModal />);
+    await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
+    const worldSection = screen.getByTestId("stats-world");
+    const paths = worldSection.querySelectorAll("path");
+    // With two non-zero segments, hovering the first should dim the second.
+    expect(paths.length).toBeGreaterThanOrEqual(2);
+    fireEvent.mouseEnter(paths[0]!);
+    expect(paths[1]!.style.opacity).toBe("0.35");
+    fireEvent.mouseLeave(paths[0]!);
+    expect(paths[1]!.style.opacity).toBe("1");
   });
 
   it("ignores regions assigned to a deleted legend", async () => {
