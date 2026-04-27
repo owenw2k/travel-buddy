@@ -1,10 +1,18 @@
 "use client";
 
 /**
- * Share button and dialog for generating a shareable snapshot URL.
+ * Share button and dialog for sharing a map snapshot to social platforms.
  */
 
-import { Bird, Check, Link2, Share2 } from "lucide-react";
+import {
+  SiBluesky,
+  SiBlueskyHex,
+  SiFacebook,
+  SiFacebookHex,
+  SiReddit,
+  SiRedditHex,
+} from "@icons-pack/react-simple-icons";
+import { Bird, Check, Link2, MessageSquare, Share2 } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -20,14 +28,18 @@ import { useMapStore } from "@/store/mapStore";
 
 import type { ReactElement } from "react";
 
+/** Twitter's brand blue, kept locally since simple-icons dropped the Twitter bird in favor of X. */
+const TWITTER_BLUE = "#1D9BF0";
+
 /**
- * A ghost icon button that opens a share dialog with Twitter and copy-link options.
+ * A ghost icon button that opens a share dialog with platform and copy-link options.
  *
- * The share URL encodes the current MapState as URL-safe base64 in the `s` query
- * parameter. If the encoded state exceeds the URL length limit, both share options
- * are replaced with a friendly "too long" message.
+ * Platforms: Twitter (bird), Facebook, Reddit, Bluesky, SMS.
+ * The share URL encodes the current MapState as URL-safe base64 in the `s` query parameter.
+ * If the encoded state exceeds the URL length limit, share options are replaced with
+ * a friendly "too long" message.
  *
- * @returns A dialog-triggering button rendered as a Share2 icon.
+ * @returns A button that opens the share dialog.
  */
 export const ShareModal = (): ReactElement => {
   const [open, setOpen] = useState(false);
@@ -46,10 +58,40 @@ export const ShareModal = (): ReactElement => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const openShare = (url: string): void => {
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   const handleTwitter = (): void => {
     const url = buildShareUrl();
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent("Check out my travel map!")}&url=${encodeURIComponent(url)}`;
-    window.open(tweetUrl, "_blank", "noopener,noreferrer");
+    openShare(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent("Check out my travel map!")}&url=${encodeURIComponent(url)}`
+    );
+  };
+
+  const handleFacebook = (): void => {
+    openShare(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(buildShareUrl())}`
+    );
+  };
+
+  const handleReddit = (): void => {
+    const url = buildShareUrl();
+    openShare(
+      `https://www.reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent("My travel map")}`
+    );
+  };
+
+  const handleBluesky = (): void => {
+    const url = buildShareUrl();
+    openShare(
+      `https://bsky.app/intent/compose?text=${encodeURIComponent(`Check out my travel map! ${url}`)}`
+    );
+  };
+
+  const handleSms = (): void => {
+    const url = buildShareUrl();
+    window.location.href = `sms:?body=${encodeURIComponent(`Check out my travel map! ${url}`)}`;
   };
 
   return (
@@ -74,16 +116,29 @@ export const ShareModal = (): ReactElement => {
             </DialogDescription>
           </DialogHeader>
           {!tooLong && (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-5 gap-2">
+                <PlatformButton label="Twitter" onClick={handleTwitter}>
+                  <Bird className="h-5 w-5" style={{ color: TWITTER_BLUE }} aria-hidden="true" />
+                </PlatformButton>
+                <PlatformButton label="Facebook" onClick={handleFacebook}>
+                  <SiFacebook className="h-5 w-5" color={SiFacebookHex} aria-hidden="true" />
+                </PlatformButton>
+                <PlatformButton label="Reddit" onClick={handleReddit}>
+                  <SiReddit className="h-5 w-5" color={SiRedditHex} aria-hidden="true" />
+                </PlatformButton>
+                <PlatformButton label="Bluesky" onClick={handleBluesky}>
+                  <SiBluesky className="h-5 w-5" color={SiBlueskyHex} aria-hidden="true" />
+                </PlatformButton>
+                <PlatformButton label="SMS" onClick={handleSms}>
+                  <MessageSquare className="h-5 w-5 text-green-500" aria-hidden="true" />
+                </PlatformButton>
+              </div>
               <Button
                 variant="outline"
-                className="w-full justify-start gap-2"
-                onClick={handleTwitter}
+                className="w-full justify-center gap-2"
+                onClick={handleCopy}
               >
-                <Bird className="h-4 w-4" aria-hidden="true" />
-                Share on Twitter
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-2" onClick={handleCopy}>
                 {copied ? (
                   <Check className="h-4 w-4 text-green-600" aria-hidden="true" />
                 ) : (
@@ -98,3 +153,29 @@ export const ShareModal = (): ReactElement => {
     </>
   );
 };
+
+type PlatformButtonProps = {
+  /** Platform name shown as a label below the icon. */
+  label: string;
+  /** Click handler for the platform share action. */
+  onClick: () => void;
+  /** Brand icon for the platform. */
+  children: React.ReactNode;
+};
+
+/**
+ * A compact square button showing a brand icon and platform label.
+ *
+ * @param props - Label, click handler, and icon.
+ * @returns A bordered button card.
+ */
+const PlatformButton = ({ label, onClick, children }: PlatformButtonProps): ReactElement => (
+  <button
+    onClick={onClick}
+    className="flex flex-col items-center gap-1.5 rounded-lg border border-border bg-background px-2 py-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+    aria-label={`Share on ${label}`}
+  >
+    {children}
+    {label}
+  </button>
+);
