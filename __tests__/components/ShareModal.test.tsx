@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { ShareModal } from "@/components/ShareModal";
@@ -15,6 +15,24 @@ jest.mock("@icons-pack/react-simple-icons", () => ({
   SiFacebookHex: "#0866FF",
   SiReddit: () => <svg data-testid="icon-reddit" />,
   SiRedditHex: "#FF4500",
+}));
+
+jest.mock("@/components/MapExportRenderer", () => ({
+  MapExportRenderer: ({ onReady }: { onReady: (refs: object) => void }) => {
+    onReady({
+      stats: document.createElement("div"),
+      world: document.createElement("div"),
+      us: document.createElement("div"),
+    });
+    return null;
+  },
+  EXPORT_W: 1200,
+  EXPORT_H: 675,
+}));
+
+jest.mock("@/lib/exportImages", () => ({
+  captureElement: jest.fn().mockResolvedValue(new Blob(["png"], { type: "image/png" })),
+  downloadBlob: jest.fn(),
 }));
 
 jest.mock("@/components/ui/dialog", () => ({
@@ -136,15 +154,33 @@ describe("ShareModal", () => {
     expect(screen.getByRole("button", { name: /copied!/i })).toBeInTheDocument();
   });
 
-  it("shows a too-long message and hides share options when state exceeds URL limit", () => {
+  it("always shows the download images button", () => {
+    setupStore();
+    render(<ShareModal />);
+    expect(screen.getByRole("button", { name: /download images/i })).toBeInTheDocument();
+  });
+
+  it("shows a too-large message and hides link share options when state exceeds URL limit", () => {
     const regions: Record<string, { legendId: string; note: string }> = {};
     for (let i = 0; i < 50; i++) {
       regions[`region-${i}`] = { legendId: "visited", note: "x".repeat(100) };
     }
     setupStore(createMapState({ regions }));
     render(<ShareModal />);
-    expect(screen.getByText(/too many notes/i)).toBeInTheDocument();
+    expect(screen.getByText(/too large to share as a link/i)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /share on twitter/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /copy link/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /download images/i })).toBeInTheDocument();
+  });
+
+  it("triggers image downloads when Download images is clicked", async () => {
+    const { downloadBlob } = await import("@/lib/exportImages");
+    setupStore();
+    render(<ShareModal />);
+    await userEvent.click(screen.getByRole("button", { name: /download images/i }));
+    await waitFor(() => expect(downloadBlob).toHaveBeenCalledTimes(3), { timeout: 2000 });
+    expect(downloadBlob).toHaveBeenCalledWith(expect.any(Blob), "travel-buddy-stats.png");
+    expect(downloadBlob).toHaveBeenCalledWith(expect.any(Blob), "travel-buddy-world.png");
+    expect(downloadBlob).toHaveBeenCalledWith(expect.any(Blob), "travel-buddy-us.png");
   });
 });
