@@ -14,11 +14,12 @@ import type { ReactElement } from "react";
 /**
  * A ghost icon button that toggles the active color scheme between light and dark.
  *
- * Reads and sets theme via next-themes `useTheme`. Defaults to treating an
- * unresolved theme (pre-hydration) as light. The aria-label describes the
- * action the button will perform, not the current state.
+ * Both icons are always present in the DOM; `dark:` CSS classes show the correct
+ * one based on the `.dark` class that next-themes sets synchronously before React
+ * hydrates. `suppressHydrationWarning` on the button covers the aria-label
+ * attribute, which differs between server (resolvedTheme is undefined) and client.
  *
- * @returns A sun or moon icon button depending on the current theme.
+ * @returns A ghost button with a sun/moon icon pair toggled by CSS.
  */
 export const DarkModeToggle = (): ReactElement => {
   const { resolvedTheme, setTheme } = useTheme();
@@ -29,12 +30,12 @@ export const DarkModeToggle = (): ReactElement => {
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => {
-        setTheme(isDark ? "light" : "dark");
-      }}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={isDark ? "switch to light mode" : "switch to dark mode"}
+      suppressHydrationWarning
     >
-      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      <Sun className="hidden h-4 w-4 dark:block" aria-hidden="true" />
+      <Moon className="h-4 w-4 dark:hidden" aria-hidden="true" />
     </Button>
   );
 };
