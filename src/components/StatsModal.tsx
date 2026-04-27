@@ -162,7 +162,7 @@ const DonutChart = ({ segments, total }: DonutChartProps): ReactElement => {
           fontFamily: "var(--font-heading)",
         }}
       >
-        {hovered?.name ?? "total"}
+        {hovered?.name ?? "Total"}
       </text>
     </svg>
   );
