@@ -66,17 +66,23 @@ describe("downloadBlob", () => {
 
   it("sets the download filename on the anchor", () => {
     const blob = new Blob(["png"], { type: "image/png" });
-    let capturedAnchor: { download: string } | null = null;
+    let capturedDownload = "";
     jest.spyOn(document, "createElement").mockImplementation((tag: string) => {
       if (tag === "a") {
         const a = { href: "", download: "", click: clickSpy, style: {} };
-        capturedAnchor = a;
+        Object.defineProperty(a, "download", {
+          get: () => capturedDownload,
+          set: (v: string) => {
+            capturedDownload = v;
+          },
+          configurable: true,
+        });
         return a as unknown as HTMLAnchorElement;
       }
       return document.createElement(tag);
     });
     downloadBlob(blob, "travel-buddy-stats.png");
-    expect(capturedAnchor?.download).toBe("travel-buddy-stats.png");
+    expect(capturedDownload).toBe("travel-buddy-stats.png");
   });
 
   it("revokes the object URL after download", () => {
