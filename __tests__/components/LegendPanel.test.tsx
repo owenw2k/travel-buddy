@@ -50,6 +50,22 @@ describe("LegendPanel", () => {
     expect(screen.getByRole("heading", { name: /legend/i })).toBeInTheDocument();
   });
 
+  it("renders the mobile toggle button", () => {
+    setupStore();
+    render(<LegendPanel />);
+    expect(screen.getByRole("button", { name: /open legend/i })).toBeInTheDocument();
+  });
+
+  it("toggles aria-expanded on the mobile strip button", async () => {
+    setupStore();
+    render(<LegendPanel />);
+    const toggle = screen.getByRole("button", { name: /open legend/i });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("button", { name: /close legend/i })).toBeInTheDocument();
+  });
+
   it("renders all legend category names", () => {
     setupStore();
     render(<LegendPanel />);
