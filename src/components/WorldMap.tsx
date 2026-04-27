@@ -75,7 +75,10 @@ export const WorldMap = (): ReactElement => {
    * instance from being torn down and re-created on every render.
    */
   const handleMoveEnd = useCallback(({ coordinates, zoom: newZoom }: MoveEndResult) => {
-    setCenter(coordinates);
+    // Clamp to valid Mercator range — out-of-range coordinates cause d3-geo
+    // to return null from projection(), which crashes path rendering.
+    const [lon, lat] = coordinates;
+    setCenter([Math.max(-180, Math.min(180, lon)), Math.max(-85, Math.min(85, lat))]);
     setZoom(newZoom);
   }, []);
 

@@ -7,6 +7,7 @@
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
 
+import { MapErrorBoundary } from "@/components/MapErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMapStore } from "@/store/mapStore";
 
@@ -65,7 +66,7 @@ export const MapContainer = (): ReactElement => {
       className="flex h-full w-full items-center justify-center"
       style={{ backgroundColor: "var(--map-ocean)" }}
     >
-      {world ? <WorldMap /> : <AmericaMap />}
+      <MapErrorBoundary>{world ? <WorldMap /> : <AmericaMap />}</MapErrorBoundary>
     </div>
   );
 };
