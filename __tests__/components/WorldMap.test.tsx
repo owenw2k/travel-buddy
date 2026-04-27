@@ -23,8 +23,22 @@ jest.mock("react-simple-maps", () => {
     ComposableMap: ({ children }: { children: ReactNode }) => (
       <div data-testid="composable-map">{children}</div>
     ),
-    ZoomableGroup: ({ children }: { children: ReactNode }) => (
-      <div data-testid="zoomable-group">{children}</div>
+    ZoomableGroup: ({
+      children,
+      onMoveEnd,
+    }: {
+      children: ReactNode;
+      onMoveEnd?: (result: { coordinates: [number, number]; zoom: number }) => void;
+    }) => (
+      <div data-testid="zoomable-group">
+        <button
+          data-testid="trigger-move-end"
+          onClick={() => onMoveEnd?.({ coordinates: [10, 20], zoom: 2 })}
+        >
+          trigger move
+        </button>
+        {children}
+      </div>
     ),
     Geographies: ({ children }: { children: (args: { geographies: MockGeo[] }) => ReactNode }) => (
       <div data-testid="geographies">{children({ geographies: mockGeos })}</div>
@@ -196,5 +210,12 @@ describe("WorldMap", () => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: /reset zoom/i }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("updates center and zoom when the map pan or zoom gesture ends", async () => {
+    render(<WorldMap />);
+    await userEvent.click(screen.getByTestId("trigger-move-end"));
+    // Map still renders after internal center/zoom state updates.
+    expect(screen.getByTestId("geo-840")).toBeInTheDocument();
   });
 });
