@@ -54,11 +54,13 @@ const setupStore = (world = true) => {
     regions: {},
     addLegend: jest.fn(),
     removeLegend: jest.fn(),
+    updateLegend: jest.fn(),
     assignRegion: jest.fn(),
     unassignRegion: jest.fn(),
     setRegionNote: jest.fn(),
     clearData,
     hydrate: jest.fn().mockResolvedValue(undefined),
+    importState: jest.fn(),
   } as ReturnType<typeof useMapStore>);
   return { setWorld, clearData };
 };

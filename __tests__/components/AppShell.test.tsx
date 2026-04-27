@@ -13,6 +13,9 @@ jest.mock("@/components/Header", () => ({
 jest.mock("@/components/LegendPanel", () => ({
   LegendPanel: () => <div data-testid="legend-panel" />,
 }));
+jest.mock("@/components/ShareImportDialog", () => ({
+  ShareImportDialog: () => null,
+}));
 
 const mockUseMapStore = useMapStore as jest.MockedFunction<typeof useMapStore> & {
   getState: jest.Mock;

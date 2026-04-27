@@ -8,6 +8,7 @@ import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { ShareModal } from "@/components/ShareModal";
 import { StatsModal } from "@/components/StatsModal";
 import {
   AlertDialog,
@@ -31,6 +32,7 @@ import type { ReactElement } from "react";
  * - App title using the Fraunces heading font
  * - World / United States map toggle buttons
  * - Stats modal button showing per-legend region counts
+ * - Share button that opens a dialog with Twitter and copy-link options
  * - Clear-data button that opens a confirmation dialog before wiping all state
  * - Dark mode toggle
  *
@@ -84,6 +86,7 @@ export const Header = (): ReactElement => {
       </div>
       <div className="flex items-center gap-1">
         <StatsModal />
+        <ShareModal />
         <Button
           variant="ghost"
           size="icon"
