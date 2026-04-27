@@ -234,7 +234,7 @@ const MapSection = ({
         <p className="text-sm font-semibold text-foreground">{title}</p>
         <p className="text-xs text-muted-foreground">{subtitle}</p>
         <div
-          className="h-1.5 w-full overflow-hidden rounded-full bg-secondary"
+          className="h-2 w-full overflow-hidden rounded-full bg-foreground/10"
           role="progressbar"
           aria-valuenow={total}
           aria-valuemin={0}
