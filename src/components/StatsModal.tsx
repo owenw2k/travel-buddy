@@ -185,11 +185,12 @@ type MapSectionProps = {
 };
 
 /**
- * One column in the stats modal — a donut chart plus per-legend counts for
- * one map (world or US).
+ * One column in the stats modal — a donut chart for one map (world or US).
+ *
+ * Hovering an arc shows that category's count in the donut center.
  *
  * @param props - Section labels, legends, and filtered region entries.
- * @returns A section with a centered donut chart and a legend count list.
+ * @returns A section with a centered donut chart and title.
  */
 const MapSection = ({
   title,
@@ -219,21 +220,6 @@ const MapSection = ({
         <p className="text-sm font-semibold text-foreground">{title}</p>
         <p className="text-xs text-muted-foreground">{subtitle}</p>
       </div>
-      <ul className="w-full flex-col gap-1.5" aria-label={`${title} legend counts`}>
-        {legends.map((legend) => (
-          <li key={legend.id} className="flex items-center gap-2 py-0.5">
-            <span
-              className="h-4 w-4 shrink-0 rounded"
-              style={{ backgroundColor: legend.color }}
-              aria-hidden="true"
-            />
-            <span className="flex-1 truncate text-sm text-foreground">{legend.name}</span>
-            <span className="tabular-nums text-sm text-muted-foreground">
-              {countsByLegend[legend.id]}
-            </span>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };
@@ -278,7 +264,7 @@ export const StatsModal = (): ReactElement => {
         <BarChart2 className="h-4 w-4" />
       </Button>
       <Dialog open={open} onOpenChange={(o) => setOpen(o)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-xs">
           <DialogHeader>
             <DialogTitle>Your Travels</DialogTitle>
             <DialogDescription>{totalLabel}</DialogDescription>

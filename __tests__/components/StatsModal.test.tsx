@@ -111,7 +111,7 @@ describe("StatsModal", () => {
     expect(screen.getByText("United States")).toBeInTheDocument();
   });
 
-  it("shows correct counts in the world section for regions without a world flag", async () => {
+  it("shows correct total in the world donut for regions without a world flag", async () => {
     setupStore([visited, driven], {
       "840": { legendId: "visited", note: "" },
       "250": { legendId: "visited", note: "" },
@@ -120,12 +120,10 @@ describe("StatsModal", () => {
     render(<StatsModal />);
     await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
     const worldSection = screen.getByTestId("stats-world");
-    const items = within(worldSection).getAllByRole("listitem");
-    expect(items[0]).toHaveTextContent("2");
-    expect(items[1]).toHaveTextContent("1");
+    expect(within(worldSection).getByText("3")).toBeInTheDocument();
   });
 
-  it("routes world=true entries to the world section and world=false to US", async () => {
+  it("routes world=true entries to the world donut and world=false to US donut", async () => {
     setupStore([visited], {
       "840": { legendId: "visited", note: "", world: true },
       "01": { legendId: "visited", note: "", world: false },
@@ -133,10 +131,8 @@ describe("StatsModal", () => {
     });
     render(<StatsModal />);
     await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
-    const worldSection = screen.getByTestId("stats-world");
-    const usSection = screen.getByTestId("stats-us");
-    expect(within(worldSection).getByRole("listitem")).toHaveTextContent("1");
-    expect(within(usSection).getByRole("listitem")).toHaveTextContent("2");
+    expect(within(screen.getByTestId("stats-world")).getByText("1")).toBeInTheDocument();
+    expect(within(screen.getByTestId("stats-us")).getByText("2")).toBeInTheDocument();
   });
 
   it("shows 'no categories yet' message when legend list is empty", async () => {
@@ -190,7 +186,7 @@ describe("StatsModal", () => {
     render(<StatsModal />);
     await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
     expect(screen.getByText(/2 regions marked/i)).toBeInTheDocument();
-    const worldSection = screen.getByTestId("stats-world");
-    expect(within(worldSection).getByRole("listitem")).toHaveTextContent("1");
+    // Only the valid legend (visited) produces a donut arc — deleted legend has no segment.
+    expect(screen.getByTestId("stats-world").querySelectorAll("path").length).toBe(1);
   });
 });
