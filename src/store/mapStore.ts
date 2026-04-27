@@ -120,6 +120,17 @@ export type MapStore = MapState & {
    * useEffect(() => { useMapStore.getState().hydrate(); }, []);
    */
   hydrate: () => void;
+
+  /**
+   * Replaces the entire map state with an incoming shared snapshot and persists it.
+   * Used when the user accepts a shared map URL import.
+   *
+   * @param state - The decoded MapState from a share URL.
+   * @example
+   * const decoded = decodeState(encoded);
+   * if (decoded) store.importState(decoded);
+   */
+  importState: (state: MapState) => void;
 };
 
 /**
@@ -226,6 +237,11 @@ export const useMapStore = create<MapStore>()((set, get) => {
       if (saved) {
         set(saved);
       }
+    },
+
+    importState: (state) => {
+      set(state);
+      saveState(state);
     },
   };
 });

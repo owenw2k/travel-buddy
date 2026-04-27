@@ -372,3 +372,31 @@ describe("hydrate", () => {
     expect(useMapStore.getState().legends).toEqual(before.legends);
   });
 });
+
+describe("importState", () => {
+  it("replaces all map state with the incoming snapshot", () => {
+    const incoming = {
+      world: false,
+      legends: [createLegend({ id: "camped", name: "Camped", color: "#7c3aed" })],
+      regions: { "US-CA": { legendId: "camped", note: "summer trip" } },
+    };
+    act(() => {
+      useMapStore.getState().importState(incoming);
+    });
+    expect(useMapStore.getState().world).toBe(false);
+    expect(useMapStore.getState().legends).toEqual(incoming.legends);
+    expect(useMapStore.getState().regions).toEqual(incoming.regions);
+  });
+
+  it("persists the imported state to storage", () => {
+    const incoming = {
+      world: false,
+      legends: [createLegend()],
+      regions: {},
+    };
+    act(() => {
+      useMapStore.getState().importState(incoming);
+    });
+    expect(mockSaveState).toHaveBeenCalledWith(incoming);
+  });
+});
