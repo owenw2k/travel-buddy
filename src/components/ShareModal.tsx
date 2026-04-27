@@ -37,20 +37,18 @@ export const ShareModal = (): ReactElement => {
   const encoded = encodeState({ world, legends, regions });
   const tooLong = isShareUrlTooLong(encoded);
 
-  /**
-   * Builds the full share URL using the current origin so it works across
-   * local dev, preview, and production environments.
-   */
-  const shareUrl = `${window.location.origin}/?s=${encoded}`;
+  /** Builds the share URL at call-time so window is only accessed client-side. */
+  const buildShareUrl = (): string => `${window.location.origin}/?s=${encoded}`;
 
   const handleCopy = async (): Promise<void> => {
-    await navigator.clipboard.writeText(shareUrl);
+    await navigator.clipboard.writeText(buildShareUrl());
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleTwitter = (): void => {
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent("Check out my travel map!")}&url=${encodeURIComponent(shareUrl)}`;
+    const url = buildShareUrl();
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent("Check out my travel map!")}&url=${encodeURIComponent(url)}`;
     window.open(tweetUrl, "_blank", "noopener,noreferrer");
   };
 
