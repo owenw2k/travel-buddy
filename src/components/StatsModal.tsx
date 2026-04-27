@@ -234,7 +234,7 @@ const MapSection = ({
         <p className="text-sm font-semibold text-foreground">{title}</p>
         <p className="text-xs text-muted-foreground">{subtitle}</p>
         <div
-          className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
+          className="h-1.5 w-full overflow-hidden rounded-full bg-secondary"
           role="progressbar"
           aria-valuenow={total}
           aria-valuemin={0}
@@ -242,7 +242,7 @@ const MapSection = ({
           aria-label={`${total} of ${mapTotal} ${subtitle.toLowerCase()} marked`}
         >
           <div
-            className="h-full rounded-full bg-foreground/50 transition-[width] duration-300"
+            className="h-full rounded-full bg-primary transition-[width] duration-300"
             style={{ width: `${progressPct}%` }}
           />
         </div>
