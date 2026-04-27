@@ -1,49 +1,54 @@
-import { get, set } from "idb-keyval";
-
 import { loadState, saveState } from "@/lib/persist";
 
 import { createMapState } from "../factories/createMapState";
 
-// idb-keyval is mocked so unit tests never touch real IndexedDB.
-jest.mock("idb-keyval");
+// Jest provides a localStorage stub via jsdom — no real storage is touched.
 
-const mockGet = get as jest.MockedFunction<typeof get>;
-const mockSet = set as jest.MockedFunction<typeof set>;
+const STATE_KEY = "travel-buddy-map-state";
+
+beforeEach(() => {
+  localStorage.clear();
+});
 
 describe("loadState", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+  it("returns null when nothing has been persisted", () => {
+    expect(loadState()).toBeNull();
   });
 
-  it("returns null when nothing has been persisted", async () => {
-    mockGet.mockResolvedValue(undefined);
-    const result = await loadState();
-    expect(result).toBeNull();
-  });
-
-  it("returns the saved MapState when it exists", async () => {
+  it("returns the saved MapState when it exists", () => {
     const state = createMapState();
-    mockGet.mockResolvedValue(state);
-    const result = await loadState();
-    expect(result).toEqual(state);
+    localStorage.setItem(STATE_KEY, JSON.stringify(state));
+    expect(loadState()).toEqual(state);
   });
 
-  it("reads from the correct idb-keyval key", async () => {
-    mockGet.mockResolvedValue(undefined);
-    await loadState();
-    expect(mockGet).toHaveBeenCalledWith("travel-buddy-map-state");
+  it("reads from the correct localStorage key", () => {
+    const state = createMapState();
+    localStorage.setItem(STATE_KEY, JSON.stringify(state));
+    loadState();
+    // Verify only the canonical key was checked.
+    expect(localStorage.getItem(STATE_KEY)).not.toBeNull();
+  });
+
+  it("returns null when the stored value is corrupt JSON", () => {
+    localStorage.setItem(STATE_KEY, "not-valid-json{{{");
+    expect(loadState()).toBeNull();
   });
 });
 
 describe("saveState", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockSet.mockResolvedValue(undefined);
+  it("writes the state under the correct localStorage key", () => {
+    const state = createMapState();
+    saveState(state);
+    expect(JSON.parse(localStorage.getItem(STATE_KEY) ?? "null")).toEqual(state);
   });
 
-  it("writes the state to the correct idb-keyval key", async () => {
+  it("does not throw when localStorage is unavailable", () => {
+    const original = localStorage.setItem.bind(localStorage);
+    jest.spyOn(Storage.prototype, "setItem").mockImplementationOnce(() => {
+      throw new Error("storage unavailable");
+    });
     const state = createMapState();
-    await saveState(state);
-    expect(mockSet).toHaveBeenCalledWith("travel-buddy-map-state", state);
+    expect(() => saveState(state)).not.toThrow();
+    Storage.prototype.setItem = original;
   });
 });

@@ -5,9 +5,9 @@
  * legend categories, what notes the user has written, and which map view
  * (world vs. US) is active.
  *
- * Persistence is fire-and-forget: every mutation calls saveState() but does
- * not await it, keeping the store synchronous. Call hydrate() on the client
- * (in a useEffect) to load the previously persisted snapshot.
+ * Persistence is synchronous: every mutation calls saveState() immediately.
+ * Call hydrate() on the client (in a useEffect) to load the previously
+ * persisted snapshot.
  */
 
 import { create } from "zustand";
@@ -113,13 +113,13 @@ export type MapStore = MapState & {
   clearData: () => void;
 
   /**
-   * Loads the persisted snapshot from IndexedDB and merges it into the store.
+   * Loads the persisted snapshot from localStorage and merges it into the store.
    * Call this once on the client, inside a useEffect, after the component mounts.
    *
    * @example
-   * useEffect(() => { void store.hydrate(); }, []);
+   * useEffect(() => { useMapStore.getState().hydrate(); }, []);
    */
-  hydrate: () => Promise<void>;
+  hydrate: () => void;
 };
 
 /**
@@ -129,12 +129,7 @@ export type MapStore = MapState & {
  * const { world, setWorld } = useMapStore();
  */
 export const useMapStore = create<MapStore>()((set, get) => {
-  /**
-   * Extracts only the serializable MapState fields from the store.
-   * Called before every saveState to avoid passing action functions to
-   * IndexedDB, which uses the structured clone algorithm and cannot clone
-   * functions.
-   */
+  /** Extracts only the serializable MapState fields from the store. */
   const snapshot = (): MapState => {
     const { world, legends, regions } = get();
     return { world, legends, regions };
@@ -145,20 +140,20 @@ export const useMapStore = create<MapStore>()((set, get) => {
 
     setWorld: (world) => {
       set({ world });
-      void saveState(snapshot());
+      saveState(snapshot());
     },
 
     addLegend: (input) => {
       const legend: Legend = { id: crypto.randomUUID(), ...input };
       const legends = [...get().legends, legend];
       set({ legends });
-      void saveState(snapshot());
+      saveState(snapshot());
     },
 
     updateLegend: (id, updates) => {
       const legends = get().legends.map((l) => (l.id === id ? { ...l, ...updates } : l));
       set({ legends });
-      void saveState(snapshot());
+      saveState(snapshot());
     },
 
     removeLegend: (id) => {
@@ -178,7 +173,7 @@ export const useMapStore = create<MapStore>()((set, get) => {
       }
 
       set({ legends, regions });
-      void saveState(snapshot());
+      saveState(snapshot());
     },
 
     assignRegion: (regionId, legendId) => {
@@ -189,7 +184,7 @@ export const useMapStore = create<MapStore>()((set, get) => {
         [regionId]: { legendId, note: existing?.note ?? "", world },
       };
       set({ regions });
-      void saveState(snapshot());
+      saveState(snapshot());
     },
 
     unassignRegion: (regionId) => {
@@ -203,7 +198,7 @@ export const useMapStore = create<MapStore>()((set, get) => {
       }
 
       set({ regions });
-      void saveState(snapshot());
+      saveState(snapshot());
     },
 
     setRegionNote: (regionId, note) => {
@@ -218,16 +213,16 @@ export const useMapStore = create<MapStore>()((set, get) => {
       }
 
       set({ regions });
-      void saveState(snapshot());
+      saveState(snapshot());
     },
 
     clearData: () => {
       set(INITIAL_STATE);
-      void saveState(INITIAL_STATE);
+      saveState(INITIAL_STATE);
     },
 
-    hydrate: async () => {
-      const saved = await loadState();
+    hydrate: () => {
+      const saved = loadState();
       if (saved) {
         set(saved);
       }

@@ -5,7 +5,7 @@ import { useMapStore } from "@/store/mapStore";
 
 import { createLegend } from "../factories/createLegend";
 
-// Mock persist so tests don't touch IndexedDB and we can assert on saves.
+// Mock persist so tests don't touch localStorage and we can assert on saves.
 jest.mock("@/lib/persist");
 
 const mockLoadState = loadState as jest.MockedFunction<typeof loadState>;
@@ -28,7 +28,7 @@ const resetStore = () => {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockSaveState.mockResolvedValue(undefined);
+  mockSaveState.mockReturnValue(undefined);
   resetStore();
 });
 
@@ -340,16 +340,16 @@ describe("clearData", () => {
 });
 
 describe("hydrate", () => {
-  it("loads persisted state into the store", async () => {
+  it("loads persisted state into the store", () => {
     const legend = createLegend({ name: "Custom" });
-    mockLoadState.mockResolvedValue({
+    mockLoadState.mockReturnValue({
       world: false,
       legends: [legend],
       regions: { "US-CA": { legendId: legend.id, note: "lovely" } },
     });
 
-    await act(async () => {
-      await useMapStore.getState().hydrate();
+    act(() => {
+      useMapStore.getState().hydrate();
     });
 
     expect(useMapStore.getState().world).toBe(false);
@@ -360,12 +360,12 @@ describe("hydrate", () => {
     });
   });
 
-  it("leaves the store unchanged when nothing is persisted", async () => {
-    mockLoadState.mockResolvedValue(null);
+  it("leaves the store unchanged when nothing is persisted", () => {
+    mockLoadState.mockReturnValue(null);
     const before = { ...useMapStore.getState() };
 
-    await act(async () => {
-      await useMapStore.getState().hydrate();
+    act(() => {
+      useMapStore.getState().hydrate();
     });
 
     expect(useMapStore.getState().world).toBe(before.world);
