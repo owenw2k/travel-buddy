@@ -162,13 +162,19 @@ const DonutChart = ({ segments, total }: DonutChartProps): ReactElement => {
           fontFamily: "var(--font-heading)",
         }}
       >
-        {hovered?.name ?? "total"}
+        {hovered?.name ?? "Total"}
       </text>
     </svg>
   );
 };
 
 // ─── Map section ─────────────────────────────────────────────────────────────
+
+/** Total number of UN-recognized sovereign states tracked in the world map. */
+const WORLD_TOTAL = 195;
+
+/** Total number of US states tracked in the US map. */
+const US_TOTAL = 50;
 
 /** Props for MapSection. */
 type MapSectionProps = {
@@ -180,23 +186,29 @@ type MapSectionProps = {
   legends: Legend[];
   /** Region entries already filtered to this map type. */
   entries: RegionEntry[];
+  /** Total possible regions in this map, used to render the progress bar. */
+  mapTotal: number;
   /** testid applied to the section root for scoped test queries. */
   testId: string;
 };
 
 /**
- * One column in the stats modal — a donut chart for one map (world or US).
+ * One column in the stats modal — a donut chart and progress bar for one map
+ * (world or US).
  *
- * Hovering an arc shows that category's count in the donut center.
+ * Hovering an arc shows that category's count in the donut center. The slim
+ * progress bar below the title shows how many regions have been marked out of
+ * the total possible for this map.
  *
- * @param props - Section labels, legends, and filtered region entries.
- * @returns A section with a centered donut chart and title.
+ * @param props - Section labels, legends, filtered region entries, and map total.
+ * @returns A section with a donut chart, title, and progress bar.
  */
 const MapSection = ({
   title,
   subtitle,
   legends,
   entries,
+  mapTotal,
   testId,
 }: MapSectionProps): ReactElement => {
   const countsByLegend: Record<string, number> = Object.fromEntries(legends.map((l) => [l.id, 0]));
@@ -213,12 +225,30 @@ const MapSection = ({
     count: countsByLegend[l.id],
   }));
 
+  const progressPct = Math.min(100, (total / mapTotal) * 100);
+
   return (
     <div className="flex flex-1 flex-col items-center gap-3" data-testid={testId}>
       <DonutChart segments={segments} total={total} />
-      <div className="text-center">
+      <div className="w-full space-y-1.5 text-center">
         <p className="text-sm font-semibold text-foreground">{title}</p>
         <p className="text-xs text-muted-foreground">{subtitle}</p>
+        <div
+          className="h-2 w-full overflow-hidden rounded-full bg-foreground/10"
+          role="progressbar"
+          aria-valuenow={total}
+          aria-valuemin={0}
+          aria-valuemax={mapTotal}
+          aria-label={`${total} of ${mapTotal} ${subtitle.toLowerCase()} marked`}
+        >
+          <div
+            className="h-full rounded-full bg-primary transition-[width] duration-300"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+        <p className="text-xs tabular-nums text-muted-foreground">
+          {total} / {mapTotal}
+        </p>
       </div>
     </div>
   );
@@ -280,6 +310,7 @@ export const StatsModal = (): ReactElement => {
                 subtitle="Countries"
                 legends={legends}
                 entries={worldEntries}
+                mapTotal={WORLD_TOTAL}
                 testId="stats-world"
               />
               <MapSection
@@ -287,6 +318,7 @@ export const StatsModal = (): ReactElement => {
                 subtitle="States"
                 legends={legends}
                 entries={usEntries}
+                mapTotal={US_TOTAL}
                 testId="stats-us"
               />
             </div>

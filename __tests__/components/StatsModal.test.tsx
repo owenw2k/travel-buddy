@@ -151,6 +151,48 @@ describe("StatsModal", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
+  it("shows the world progress bar with correct fraction text", async () => {
+    setupStore([visited], {
+      "840": { legendId: "visited", note: "", world: true },
+      "250": { legendId: "visited", note: "", world: true },
+    });
+    render(<StatsModal />);
+    await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
+    const worldSection = screen.getByTestId("stats-world");
+    expect(within(worldSection).getByText("2 / 195")).toBeInTheDocument();
+  });
+
+  it("shows the US progress bar with correct fraction text", async () => {
+    setupStore([visited], {
+      "01": { legendId: "visited", note: "", world: false },
+      "48": { legendId: "visited", note: "", world: false },
+      "06": { legendId: "visited", note: "", world: false },
+    });
+    render(<StatsModal />);
+    await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
+    const usSection = screen.getByTestId("stats-us");
+    expect(within(usSection).getByText("3 / 50")).toBeInTheDocument();
+  });
+
+  it("shows 0 / 195 and 0 / 50 when nothing is assigned", async () => {
+    setupStore([visited], {});
+    render(<StatsModal />);
+    await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
+    expect(within(screen.getByTestId("stats-world")).getByText("0 / 195")).toBeInTheDocument();
+    expect(within(screen.getByTestId("stats-us")).getByText("0 / 50")).toBeInTheDocument();
+  });
+
+  it("renders the world progress bar with the correct aria attributes", async () => {
+    setupStore([visited], {
+      "840": { legendId: "visited", note: "", world: true },
+    });
+    render(<StatsModal />);
+    await userEvent.click(screen.getByRole("button", { name: /view stats/i }));
+    const bar = within(screen.getByTestId("stats-world")).getByRole("progressbar");
+    expect(bar).toHaveAttribute("aria-valuenow", "1");
+    expect(bar).toHaveAttribute("aria-valuemax", "195");
+  });
+
   it("ignores regions with no legendId when counting totals", async () => {
     setupStore([visited], {
       "840": { legendId: "visited", note: "" },
